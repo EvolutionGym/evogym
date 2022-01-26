@@ -1,0 +1,17 @@
+{
+    "grid_width": 1,
+    "grid_height": 1,
+    "objects": {
+        "new_object_1": {
+            "indices": [
+                0
+            ],
+            "types": [
+                1
+            ],
+            "neighbors": {
+                "0": []
+            }
+        }
+    }
+}
