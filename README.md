@@ -84,4 +84,18 @@ You can find documentation on our [website](https://evolutiongym.github.io/docum
 
 ## Design Tool
 
-To use the Evolution Gym Design Tool, please see the `design-tool` folder and its `README`.
+For instructions on how to use the Evolution Gym Design Tool, please see [this repo](https://github.com/EvolutionGym/evogym-design-tool).
+
+# Citation
+
+If you find our repository helpful to your research, please cite our paper:
+
+```shell
+@article{bhatia2021evolution,
+  title={Evolution gym: A large-scale benchmark for evolving soft robots},
+  author={Bhatia, Jagdeep and Jackson, Holly and Tian, Yunsheng and Xu, Jie and Matusik, Wojciech},
+  journal={Advances in Neural Information Processing Systems},
+  volume={34},
+  year={2021}
+}
+```
