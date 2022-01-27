@@ -90,7 +90,7 @@ For instructions on how to use the Evolution Gym Design Tool, please see [this r
 
 If you find our repository helpful to your research, please cite our paper:
 
-```shell
+```
 @article{bhatia2021evolution,
   title={Evolution gym: A large-scale benchmark for evolving soft robots},
   author={Bhatia, Jagdeep and Jackson, Holly and Tian, Yunsheng and Xu, Jie and Matusik, Wojciech},
