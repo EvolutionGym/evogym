@@ -29,7 +29,6 @@ sim = EvoSim(world)
 sim.reset()
 
 # a viewer object will allow us to visualize our simulation
-# the timer object allows us to control the frequency at which we step the simulation, which is useful for visualizations
 
 viewer = EvoViewer(sim)
 viewer.track_objects('robot', 'box')

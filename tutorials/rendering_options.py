@@ -1,5 +1,5 @@
 from tabnanny import verbose
-from evogym import EvoWorld, WorldObject, EvoSim, EvoViewer, Timer, sample_robot
+from evogym import EvoWorld, WorldObject, EvoSim, EvoViewer, sample_robot
 import os
 import numpy as np
 import cv2
@@ -32,9 +32,9 @@ option = options[0]
 
 print(f'\nUsing rendering option {option}...\n')
 
-# set a timer limit unless the 'very-fast' option is chosen
+# if the 'very-fast' option is chosen, set the rendering speed to be unlimited
 if option == 'very-fast':
-    timer = viewer.set_target_rps(None)
+    viewer.set_target_rps(None)
 
 while True:
 
@@ -69,7 +69,7 @@ while True:
             hide_edges = False,
             hide_voxels = False)
 
-    # rendering as fast as possible (without a timer limit)
+    # rendering as fast as possible
     if option == 'very-fast':
         viewer.render('screen', verbose=True)
 
