@@ -2,16 +2,12 @@ from evogym import EvoWorld, EvoSim, EvoViewer, sample_robot
 import os
 import numpy as np
 
-# create a EvoWorld object by loading a simple environment created with the Evolution Gym Design Tool.
+# create a EvoWorld object with environment data and visualize it
 
 world = EvoWorld.from_json(os.path.join('world_data', 'simple_environment.json'))
-
-# the best way to visualize environments is within the Evolution Gym Design Tool
-# however we can also visualize them with this handy function
-
 world.pretty_print()
 
-# would like to add a randomly sampled 5x5 robot to this environment
+# add a randomly sampled 5x5 robot to the world
 
 robot_structure, robot_connections = sample_robot((5, 5))
 world.add_from_array(
@@ -23,7 +19,7 @@ world.add_from_array(
 
 world.pretty_print()
 
-# we create a simulation using our world object to specify the locations of all objects/voxels
+# create a simulation using our world object
 
 sim = EvoSim(world)
 sim.reset()
@@ -35,7 +31,7 @@ viewer.track_objects('robot', 'box')
 
 # we put it all together in this loop in which we sample a random action for our simulation, step the simulation, and render it
 
-while True:
+for i in range(500):
 
     sim.set_action(
         'robot', 

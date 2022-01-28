@@ -1,10 +1,9 @@
-from tabnanny import verbose
-from evogym import EvoWorld, WorldObject, EvoSim, EvoViewer, sample_robot
+from evogym import EvoWorld, EvoSim, EvoViewer, sample_robot
 import os
 import numpy as np
 import cv2
 
-# create a simple Evolution Gym Environment as done in basic_api.py
+### CREATE A SIMPLE ENVIRONMENT ###
 
 # create world
 world = EvoWorld.from_json(os.path.join('world_data', 'simple_environment.json'))
@@ -26,9 +25,10 @@ sim.reset()
 viewer = EvoViewer(sim)
 viewer.track_objects('robot', 'box')
 
-# select a rendering option
+### SELECT A RENDERING OPTION ###
+
 options = ['to-debug-screen', 'to-numpy-array', 'special-options', 'very-fast']
-option = options[0]
+option = options[3]
 
 print(f'\nUsing rendering option {option}...\n')
 
@@ -36,7 +36,7 @@ print(f'\nUsing rendering option {option}...\n')
 if option == 'very-fast':
     viewer.set_target_rps(None)
 
-while True:
+for i in range(1000):
 
     sim.set_action(
         'robot', 
