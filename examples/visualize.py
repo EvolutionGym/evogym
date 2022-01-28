@@ -17,7 +17,6 @@ from ppo.envs import make_vec_envs
 from ppo.utils import get_vec_normalize
 
 import evogym.envs
-from evogym import Timer
 
 def visualize_codesign(args, exp_name):
     global EXPERIMENT_PARENT_DIR

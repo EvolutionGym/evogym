@@ -1,6 +1,6 @@
 import gym
 import evogym.envs
-from evogym import sample_robot, Timer
+from evogym import sample_robot
 
 
 if __name__ == '__main__':
