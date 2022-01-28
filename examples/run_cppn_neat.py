@@ -8,14 +8,6 @@ if __name__ == '__main__':
     random.seed(seed)
     np.random.seed(seed)
 
-    # best_robot, best_fitness = run_cppn_neat(
-    #     experiment_name='test_cppn',
-    #     structure_shape=(5, 5),
-    #     pop_size=50,
-    #     max_evaluations=500,
-    #     train_iters=1000,
-    #     num_cores=25,
-    # )
     best_robot, best_fitness = run_cppn_neat(
         experiment_name='test_cppn',
         structure_shape=(5, 5),
@@ -24,6 +16,7 @@ if __name__ == '__main__':
         train_iters=50,
         num_cores=3,
     )
+    
     print('Best robot:')
     print(best_robot)
     print('Best fitness:', best_fitness)

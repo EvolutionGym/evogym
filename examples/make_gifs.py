@@ -236,25 +236,17 @@ class Job():
 GIF_RESOLUTION = (1280/5, 720/5)
 NUM_PROC = 8
 if __name__ == '__main__':
-    # exp_root = os.path.join('D:', 'RobotAPI', 'python_example', 'saved_data')
     exp_root = os.path.join('saved_data')
     save_dir = os.path.join(root_dir, 'saved_data', 'all_media')
+
     my_job = Job(
         name = 'test_ga',
         experiment_names= ['test_ga'],
         env_names = ['Walker-v0'],
+        ranks = [i for i in range(3)],
         load_dir = exp_root,
         organize_by_experiment=False,
         organize_by_generation=True,
     )
-    # my_job = Job(
-    #     name = 'ga_walking_flat_3_best',
-    #     experiment_names= ['ga_walking_flat_3'],
-    #     env_names = ['Walker-v0'],
-    #     load_dir = exp_root,
-    #     # generations = [44, 45, 46],
-    #     ranks = [i for i in range(100)],
-    #     # organize_by_experiment=False,
-    #     # organize_by_generation=True,
-    # )
+    
     my_job.generate(load_dir=exp_root, save_dir=save_dir)

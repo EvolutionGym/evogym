@@ -3,7 +3,7 @@ from ppo.group_ppo import run_group_ppo, SimJob
 if __name__ == "__main__":
 
     run_group_ppo(
-        experiment_name = 'test_group_ppo2',
+        experiment_name = 'test_group_ppo',
         sim_jobs = [
             SimJob(
                 name = 'big',
