@@ -2,7 +2,7 @@
     "grid_width": 30,
     "grid_height": 1,
     "objects": {
-        "new_object_1": {
+        "ground": {
             "indices": [
                 0,
                 1,
