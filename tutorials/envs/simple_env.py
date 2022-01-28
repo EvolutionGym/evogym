@@ -18,10 +18,10 @@ class SimpleWalkerEnvClass(EvoGymBase):
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
-        num_robot_points = self.object_pos_at_time(self.get_time(), 'robot').size
+        obs_size = self.reset().size
 
         self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=np.float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(obs_size,), dtype=np.float)
 
         # set viewer to track objects
         self.default_viewer.track_objects('robot')
@@ -37,12 +37,6 @@ class SimpleWalkerEnvClass(EvoGymBase):
         # collect post step information
         pos_2 = self.object_pos_at_time(self.get_time(), "robot")
 
-        # observation
-        obs = np.concatenate((
-            self.get_vel_com_obs("robot"),
-            self.get_relative_pos_obs("robot"),
-            ))
-
         # compute reward
         com_1 = np.mean(pos_1, 1)
         com_2 = np.mean(pos_2, 1)
@@ -54,9 +48,15 @@ class SimpleWalkerEnvClass(EvoGymBase):
             reward -= 3.0
             
         # check goal met
-        if com_2[0] > 99:
+        if com_2[0] > 28:
             done = True
             reward += 1.0
+
+        # observation
+        obs = np.concatenate((
+            self.get_vel_com_obs("robot"),
+            self.get_relative_pos_obs("robot"),
+            ))
 
         # observation, reward, has simulation met termination conditions, debugging info
         return obs, reward, done, {}
