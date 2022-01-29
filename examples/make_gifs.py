@@ -222,19 +222,31 @@ class Job():
         # sort and generate
         robots = sorted(robots, key=lambda x: x.reward, reverse=True)
         ranks = self.ranks if self.ranks is not None else [i for i in range(len(robots))]
-        group = mp.Group()
-        for i, robot in zip(ranks, robots):              
-            gif_args = (
+        
+        # make gifs
+        for i, robot in zip(ranks, robots):
+            save_robot_gif(
                 os.path.join(save_dir, f'{i}_{robot}'),
                 robot.env_name,
                 robot.body_path,
                 robot.ctrl_path
             )
-            group.add_job(save_robot_gif, gif_args, callback=dummy_callback)
-        group.run_jobs(NUM_PROC)
+
+        # multiprocessing is currently broken
+        
+        # group = mp.Group()
+        # for i, robot in zip(ranks, robots):              
+        #     gif_args = (
+        #         os.path.join(save_dir, f'{i}_{robot}'),
+        #         robot.env_name,
+        #         robot.body_path,
+        #         robot.ctrl_path
+        #     )
+        #     group.add_job(save_robot_gif, gif_args, callback=dummy_callback)
+        # group.run_jobs(NUM_PROC)
     
 GIF_RESOLUTION = (1280/5, 720/5)
-NUM_PROC = 8
+# NUM_PROC = 8
 if __name__ == '__main__':
     exp_root = os.path.join('saved_data')
     save_dir = os.path.join(root_dir, 'saved_data', 'all_media')
