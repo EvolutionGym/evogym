@@ -28,7 +28,7 @@ viewer.track_objects('robot', 'box')
 ### SELECT A RENDERING OPTION ###
 
 options = ['to-debug-screen', 'to-numpy-array', 'special-options', 'very-fast']
-option = options[3]
+option = options[0]
 
 print(f'\nUsing rendering option {option}...\n')
 
