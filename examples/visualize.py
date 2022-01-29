@@ -276,8 +276,6 @@ def visualize_group_ppo(args, exp_name):
         
         env.venv.close()
 
-
-# EXPERIMENT_PARENT_DIR = os.path.join('D:', 'RobotAPI', 'python_example', 'saved_data')
 EXPERIMENT_PARENT_DIR = os.path.join(root_dir, 'saved_data')
 if __name__ == "__main__":
     
