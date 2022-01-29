@@ -10,7 +10,7 @@ A large-scale benchmark for co-optimizing the design and control of soft robots.
 Clone the repo and submodules:
 
 ```shell
-git clone --recurse-submodules https://github.com/deepers14159/RobotAPI.git
+git clone --recurse-submodules https://github.com/EvolutionGym/evogym.git
 ```
 
 ### Requirements
