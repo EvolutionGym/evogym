@@ -33,6 +33,7 @@ Either install Python dependencies with conda:
 
 ```shell
 conda env create -f environment.yml
+conda activate evogym
 ```
 
 or with pip:
