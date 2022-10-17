@@ -198,7 +198,7 @@ class EvoViewer():
         Render the simulation.
 
         Args:
-            mode (str): values of 'screen' and 'human' will render to a debug window. If set to 'img' will return an image array.
+            mode (str): values of 'screen' and 'human' will render to a debug window. If set to 'img' or 'rgb_array' will return an image array.
             verbose (bool): whether or not to print the rendering speed (rps) every second.
             hide_background (bool): whether or not to render the cream-colored background. If shut off background will be white.
             hide_grid (bool): whether or not to render the grid.
@@ -209,7 +209,7 @@ class EvoViewer():
             Optional[np.ndarray]: if `mode` is set to `img`, will return an image array.
         """
 
-        accepted_modes = ['screen', 'human', 'img']
+        accepted_modes = ['screen', 'human', 'img', 'rgb_array']
         if not mode in accepted_modes:
             raise ValueError(
                 f'mode {mode} is not a valid mode. The valid modes are {accepted_modes}'
@@ -236,7 +236,7 @@ class EvoViewer():
                 self._has_init_screen_camera = True
             self._viewer.render(self.screen_camera, *render_settings)
 
-        if mode == 'img':
+        if mode == 'img' or mode == 'rgb_array':
             if not self._has_init_img_camera:
                 self._init_img_camera()
                 self._has_init_img_camera = True
