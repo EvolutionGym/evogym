@@ -1,0 +1,34 @@
+name: Testing
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+      - name: Install deb dependencies
+        run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev
+      - name: Install python dependencies
+        run: pip install -r requirements.txt
+      - name: Cache python wheel packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: wheel-cache-${{ hashFiles('requirements.txt') }}
+      - name: Install evolution gym
+        run: pip install -e .
+      - name: Run test
+        run: python -c 'import evogym; print(f"{evogym.__name__} was loaded.")'
