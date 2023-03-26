@@ -1,11 +1,11 @@
 glfw==2.5.0
 GPy==1.10.0
-GPyOpt @ git+git://github.com/yunshengtian/GPyOpt@5fc1188ffdefea9a3bc7964a9414d4922603e904
+GPyOpt @ git+https://github.com/yunshengtian/GPyOpt@5fc1188ffdefea9a3bc7964a9414d4922603e904
 gym==0.19.0
 h5py==3.6.0
 imageio==2.14.1
 matplotlib==3.5.1
-neat-python @ git+git://github.com/yunshengtian/neat-python@2762ab630838520ca6c03a866e8a158f592b0370
+neat-python @ git+https://github.com/yunshengtian/neat-python@2762ab630838520ca6c03a866e8a158f592b0370
 numpy==1.21.5
 opencv-python==4.5.5.62
 Pillow==9.0.0
