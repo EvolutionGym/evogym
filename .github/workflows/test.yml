@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install deb dependencies
-        run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev
+        run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev xvfb
       - name: Install python dependencies
         run: pip install -r requirements.txt
       - name: Cache python wheel packages
@@ -41,4 +41,4 @@ jobs:
       - name: Install evolution gym
         run: pip install -e .
       - name: Run test
-        run: python -c 'import evogym; print(f"{evogym.__name__} was loaded.")'
+        run: xvfb-run python -m unittest tests/test_render.py
