@@ -11,14 +11,21 @@ concurrency:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        python:
+          - "3.7"
+          - "3.8"
+          - "3.9"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-python@v4
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: ${{ matrix.python }}
       - name: Install deb dependencies
         run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev
       - name: Install python dependencies
