@@ -1,0 +1,44 @@
+name: Testing
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - "ubuntu-22.04"
+          - "ubuntu-latest"
+        python:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install deb dependencies
+        run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev xvfb
+      - name: Install python dependencies
+        run: pip install -r requirements.txt
+      - name: Cache python wheel packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: wheel-cache-${{ hashFiles('requirements.txt') }}
+      - name: Install evolution gym
+        run: pip install -e .
+      - name: Run test
+        run: xvfb-run python -m unittest tests/test_render.py
