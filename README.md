@@ -47,7 +47,7 @@ pip install -r requirements.txt
 To build the C++ simulation, build all the submodules, and install `evogym` run the following command:
 
 ```shell
-python setup.py install
+pip install .
 ``` 
 
 ### Test Installation
