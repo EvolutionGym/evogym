@@ -25,11 +25,22 @@ git clone --recurse-submodules https://github.com/EvolutionGym/evogym.git
 
 ### Running with Docker
 
-A Dockerfile is provided which can be used to build an image. Alternatively, a prebuilt version of this image is available on Dockerhub:
+A Dockerfile is provided which can be used to build an image:
+
+```shell
+docker build -t evogym .
+```
+
+Alternatively, a prebuilt version of this image is available on Dockerhub:
 
 ```shell
 docker pull dennisgwilson/evogym
-docker run -it -p 8888:8888 evoimage
+```
+
+Once the image `evogym` is installed, it can be run using:
+
+```shell
+docker run -it -p 8888:8888 evogym
 ```
 
 Your container should include a python shell with evogym installed. To run using jupyter, find the container name (`docker ps`) and run the following:
