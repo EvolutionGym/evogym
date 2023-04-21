@@ -23,23 +23,30 @@ git clone --recurse-submodules https://github.com/EvolutionGym/evogym.git
 
 <!--- (See [installation instructions](#opengl-installation-on-unix-based-systems) on Unix based systems) --->
 
-On **Linux only**:
+### Running with Docker
+
+A Dockerfile is provided which can be used to build an image:
 
 ```shell
-sudo apt-get install xorg-dev libglu1-mesa-dev
+docker build -t evogym .
 ```
 
-Either install Python dependencies with conda:
+Alternatively, a prebuilt version of this image is available on Dockerhub:
 
 ```shell
-conda env create -f environment.yml
-conda activate evogym
+docker pull dennisgwilson/evogym
 ```
 
-or with pip:
+Once the image `evogym` is installed, it can be run using:
 
 ```shell
-pip install -r requirements.txt
+docker run -it -p 8888:8888 evogym
+```
+
+Your container should include a python shell with evogym installed. To run using jupyter, find the container name (`docker ps`) and run the following:
+
+```shell
+docker exec <CONTAINER_NAME> jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
 ```
 
 ### Build and Install Package
@@ -47,7 +54,8 @@ pip install -r requirements.txt
 To build the C++ simulation, build all the submodules, and install `evogym` run the following command:
 
 ```shell
-python setup.py install
+pip install -r requirements.txt
+pip install .
 ``` 
 
 ### Test Installation
