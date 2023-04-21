@@ -4,6 +4,7 @@ GPyOpt @ git+https://github.com/yunshengtian/GPyOpt@5fc1188ffdefea9a3bc7964a9414
 gym==0.22.0
 h5py==3.6.0
 imageio==2.14.1
+jupyter==1.0.0
 matplotlib==3.5.1
 numpy==1.21.5
 opencv-python==4.5.5.62
@@ -12,4 +13,6 @@ pybind11==2.9.0
 PyOpenGL==3.1.5
 PyOpenGL-accelerate==3.1.5
 ttkbootstrap==1.5.1
+torch==1.10.2
+tqdm==4.62.3
 typing==3.7.4.3
