@@ -34,7 +34,7 @@ jobs:
       - name: Install python dependencies
         run:
           pip install -U setuptools==30
-          pip install -U pip==15.0
+          pip install -U pip==18.0
           pip install -r requirements.txt
       - name: Cache python wheel packages
         uses: actions/cache@v3
