@@ -32,7 +32,10 @@ jobs:
       - name: Install deb dependencies
         run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev xvfb
       - name: Install python dependencies
-        run: pip install -r requirements.txt
+        run:
+          pip install -U setuptools==30
+          pip install -U pip==15.0
+          pip install -r requirements.txt
       - name: Cache python wheel packages
         uses: actions/cache@v3
         with:
