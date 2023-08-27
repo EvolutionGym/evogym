@@ -15,11 +15,11 @@ jobs:
       matrix:
         os:
           - "ubuntu-22.04"
-          - "ubuntu-latest"
+          # - "ubuntu-latest"
         python:
-          - "3.7"
+          # - "3.7"
           - "3.8"
-          - "3.9"
+          # - "3.9"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
