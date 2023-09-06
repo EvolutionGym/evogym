@@ -1,7 +1,7 @@
 glfw==2.5.0
 GPy==1.10.0
 GPyOpt @ git+https://github.com/yunshengtian/GPyOpt@5fc1188ffdefea9a3bc7964a9414d4922603e904
-gym==0.21.0
+gym==0.22.0
 h5py==3.6.0
 imageio==2.14.1
 matplotlib==3.5.1
