@@ -42,6 +42,6 @@ jobs:
           path: ~/.cache/pip
           key: wheel-cache-${{ hashFiles('requirements.txt') }}
       - name: Install evolution gym
-        run: pip install -e .
+        run: pip install .
       - name: Run test
         run: xvfb-run python -m unittest tests/test_render.py
