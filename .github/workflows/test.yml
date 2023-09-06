@@ -33,8 +33,8 @@ jobs:
         run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev xvfb
       - name: Install python dependencies
         run:
-          pip install -U setuptools==50.0.0
-          pip install -U pip==21.0
+          pip install -U setuptools
+          pip install -U pip
           pip install -r requirements.txt --no-warn-conflicts
       - name: Cache python wheel packages
         uses: actions/cache@v3
