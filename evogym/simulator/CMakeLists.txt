@@ -19,6 +19,9 @@ endif()
 
 if(UNIX)
   find_package(OpenGL REQUIRED)
+  set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})  # use custom FindGLEW.cmake
+  set(GLEW_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/externals/glew/include)
+  set(GLEW_LIBRARY ${PROJECT_SOURCE_DIR}/externals/glew/lib/libGLEW.*)
   find_package(GLEW REQUIRED)
 endif()
 
@@ -46,4 +49,3 @@ add_subdirectory(SimulatorCPP/)
 
 set(CMAKE_CXX_STANDARD_LIBRARIES -ldl)
 # set(CMAKE_VERBOSE_MAKEFILE ON)
-
