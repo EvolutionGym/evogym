@@ -136,10 +136,10 @@ int Sim::get_time() {
 	return sim_time;
 }
 
-Ref <MatrixXd> Sim::pos_at_time(long int sim_time) {
+RefMatrixXd Sim::pos_at_time(long int sim_time) {
 	return environment.get_pos_at_time(sim_time);
 }
-Ref <MatrixXd> Sim::vel_at_time(long int sim_time) {
+RefMatrixXd Sim::vel_at_time(long int sim_time) {
 	return environment.get_vel_at_time(sim_time);
 }
 double Sim::object_orientation_at_time(long int sim_time, string object_name) {
@@ -151,10 +151,10 @@ void Sim::translate_object(double x, double y, string object_name) {
 }
 
 
-Ref <MatrixXd> Sim::object_pos_at_time(long int sim_time, string object_name) {
+RefMatrixXd Sim::object_pos_at_time(long int sim_time, string object_name) {
 	return environment.object_pos_at_time(sim_time, object_name);
 }
-Ref <MatrixXd> Sim::object_vel_at_time(long int sim_time, string object_name) {
+RefMatrixXd Sim::object_vel_at_time(long int sim_time, string object_name) {
 	return environment.object_vel_at_time(sim_time, object_name);
 }
 
