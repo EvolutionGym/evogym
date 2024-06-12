@@ -16,21 +16,36 @@ A large-scale benchmark for co-optimizing the design and control of soft robots.
 
 # Installation
 
-Clone the repo and submodules:
+You can install evogym from PyPi or from source.
+
+## From PyPi
+
+To use evogym in your projects, simply run:
 
 ```shell
-git clone --recurse-submodules https://github.com/EvolutionGym/evogym.git
+pip install --upgrade evogym
 ```
+
+> [!CAUTION]
+> This doesn't work yet -- coming soon!
+
+## From Source
+
+If your platform is not supported, you may try building from source:
 
 ### Requirements
 
-* Python 3.7/3.8
+* Python 3.7+
 * Linux, macOS, or Windows with [Visual Studios 2017](https://visualstudio.microsoft.com/vs/older-downloads/)
 * [OpenGL](https://www.opengl.org//)
 * [CMake](https://cmake.org/download/)
 * [PyTorch](http://pytorch.org/)
 
-<!--- (See [installation instructions](#opengl-installation-on-unix-based-systems) on Unix based systems) --->
+Clone the repo and submodules:
+
+```shell
+git clone --recurse-submodules https://github.com/EvolutionGym/evogym.git
+```
 
 On **Linux only**:
 
@@ -38,33 +53,43 @@ On **Linux only**:
 sudo apt-get install xorg-dev libglu1-mesa-dev
 ```
 
-Either install Python dependencies with conda:
+To build the C++ simulation, build all the submodules, and install `evogym` run the following command in the environment of your choice:
 
 ```shell
-conda env create -f environment.yml
-conda activate evogym
+pip install -e .
 ```
 
-or with pip:
+## Test Installation
 
-```shell
-pip install -r requirements.txt
-```
-
-### Build and Install Package
-
-To build the C++ simulation, build all the submodules, and install `evogym` run the following command:
-
-```shell
-python setup.py install
-``` 
-
-### Test Installation
-
-cd to the `examples` folder and run the following script:
+If you have the repo cloned, `cd` to the `examples` folder and run the following script:
 
 ```shell
 python gym_test.py
+```
+
+Alternatively, you can run the following snippet:
+
+```python
+import gym
+import evogym.envs
+from evogym import sample_robot
+
+
+if __name__ == '__main__':
+
+    body, connections = sample_robot((5,5))
+    env = gym.make('Walker-v0', body=body)
+    env.reset()
+
+    while True:
+        action = env.action_space.sample()-1
+        ob, reward, done, info = env.step(action)
+        env.render()
+
+        if done:
+            env.reset()
+
+    env.close()
 ```
 
 This script creates a random `5x5` robot in the `Walking-v0` environment. The robot is taking random actions. A window should open with a visualization of the environment -- kill the process from the terminal to close it.
