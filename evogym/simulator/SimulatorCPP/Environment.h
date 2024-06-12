@@ -17,12 +17,12 @@
 using namespace std;
 using namespace Eigen;
 
-#ifdef __APPLE__
+// #ifdef __APPLE__
+// using RefMatrixXd = Matrix <double, 2, Dynamic>;
+// #else
+// using RefMatrixXd = Ref <MatrixXd>;
+// #endif
 using RefMatrixXd = Matrix <double, 2, Dynamic>;
-#else
-using RefMatrixXd = Ref <MatrixXd>;
-#endif
-
 class Environment
 {
 private:

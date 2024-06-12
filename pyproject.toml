@@ -1,3 +1,39 @@
 [build-system]
-requires = ["setuptools", "wheel", "pybind11>=2.6.0"]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta" # Setuptools used because compiling C++ code requires CMake
+
+# Manually specify packages and their directories
+[tool.setuptools.package-dir]
+evogym = "evogym"
+"evogym.envs" = "evogym/envs"
+"evogym.simulator_cpp" = "evogym/simulator" # C++ simulator package renamed
+
+# Manually specify package data
+[tool.setuptools.package-data]
+"evogym.envs" = ["sim_files/*.json"]
+
+[project]
+name = "evogym"
+version = "2.0.0"
+authors = [
+  { name="Jagdeep Singh Bhatia", email="jagdeep@mit.edu" },
+]
+description = "Evolution Gym: A benchmark for developing and evaluating soft robot co-design algorithms."
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["evolution", "gym", "evolution gym", "soft robotics", "benchmark", "co-design"]
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "gym==0.22.0",
+    "numpy",
+]
+
+[project.urls]
+Homepage = "https://github.com/EvolutionGym/evogym"
+Issues = "https://github.com/EvolutionGym/evogym/issues"
+Documentation = "https://evolutiongym.github.io/"
