@@ -10,22 +10,23 @@ import random
 from math import *
 import numpy as np
 import os
+from typing import Dict, Any, Optional
 
 class ShapeBase(BenchmarkBase):
     
     def __init__(self, world):
         super().__init__(world)
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
         
         # observation
         obs = np.concatenate((
             self.get_relative_pos_obs("robot"),
             ))
 
-        return obs
+        return obs, {}
 
     ### ----------------------------------------------------------------------
 
@@ -90,8 +91,8 @@ class MaximizeShape(ShapeBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -117,8 +118,8 @@ class MaximizeShape(ShapeBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
     
     def get_reward(self, robot_pos_init, robot_pos_final):
 
@@ -149,8 +150,8 @@ class MinimizeShape(ShapeBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -176,8 +177,8 @@ class MinimizeShape(ShapeBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
     def get_reward(self, robot_pos_init, robot_pos_final):
 
@@ -208,8 +209,8 @@ class MaximizeXShape(ShapeBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -235,8 +236,8 @@ class MaximizeXShape(ShapeBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
     
     def get_reward(self, robot_pos_init, robot_pos_final):
         
@@ -268,8 +269,8 @@ class MaximizeYShape(ShapeBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -295,8 +296,8 @@ class MaximizeYShape(ShapeBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
     
     def get_reward(self, robot_pos_init, robot_pos_final):
         

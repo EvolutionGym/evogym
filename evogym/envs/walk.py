@@ -2,6 +2,7 @@ import gym
 from gym import error, spaces
 from gym import utils
 from gym.utils import seeding
+from typing import Optional, Dict, Any
 
 from evogym import *
 from evogym.envs import BenchmarkBase
@@ -26,8 +27,8 @@ class WalkingFlat(BenchmarkBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -61,12 +62,12 @@ class WalkingFlat(BenchmarkBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         obs = np.concatenate((
@@ -74,7 +75,7 @@ class WalkingFlat(BenchmarkBase):
             self.get_relative_pos_obs("robot"),
             ))
 
-        return obs
+        return obs, {}
 
 class SoftBridge(BenchmarkBase):
 
@@ -91,8 +92,8 @@ class SoftBridge(BenchmarkBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + 1 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + 1 + num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -127,12 +128,12 @@ class SoftBridge(BenchmarkBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         obs = np.concatenate((
@@ -141,7 +142,7 @@ class SoftBridge(BenchmarkBase):
             self.get_relative_pos_obs("robot"),
             ))
 
-        return obs
+        return obs, {}
 
 class Duck(BenchmarkBase):
 
@@ -159,8 +160,8 @@ class Duck(BenchmarkBase):
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points + 2*(self.sight_dist*2 +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points + 2*(self.sight_dist*2 +1),), dtype=float)
 
     def step(self, action):
 
@@ -196,12 +197,12 @@ class Duck(BenchmarkBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         obs = np.concatenate((
@@ -211,4 +212,4 @@ class Duck(BenchmarkBase):
             self.get_ceil_obs("robot", ["terrain"], self.sight_dist),
             ))
 
-        return obs
+        return obs, {}

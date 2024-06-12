@@ -4,7 +4,7 @@ from gym import error, spaces
 from gym import utils
 from gym.utils import seeding
 
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Any
 from evogym import *
 
 import random
@@ -45,7 +45,7 @@ class EvoGymBase(gym.Env):
 
         return done
 
-    def reset(self,) -> None:
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> None:
         """
         Reset the simulation to the initial state.
         """
@@ -71,18 +71,20 @@ class EvoGymBase(gym.Env):
         """
         return self._default_viewer
     
-    def render(self,
-               mode: str ='screen',
-               verbose: bool = False,
-               hide_background: bool = False,
-               hide_grid: bool = False,
-               hide_edges: bool = False,
-               hide_voxels: bool = False) -> Optional[np.ndarray]:
+    def render(
+        self,
+        mode: str = 'screen',
+        verbose: bool = False,
+        hide_background: bool = False,
+        hide_grid: bool = False,
+        hide_edges: bool = False,
+        hide_voxels: bool = False
+    ) -> Optional[np.ndarray]:
         """
         Render the simulation.
 
         Args:
-            mode (str): values of 'screen' and 'human' will render to a debug window. If set to 'img' will return an image array.
+            mode (str): values of `screen` and `human` will render to a debug window. If set to `img` or `rgb_array` will return an image array.
             verbose (bool): whether or not to print the rendering speed (rps) every second.
             hide_background (bool): whether or not to render the cream-colored background. If shut off background will be white.
             hide_grid (bool): whether or not to render the grid.
@@ -90,7 +92,7 @@ class EvoGymBase(gym.Env):
             hide_voxels (bool): whether or not to render voxels.
 
         Returns:
-            Optional[np.ndarray]: if `mode` is set to `img`, will return an image array.
+            Optional[np.ndarray]: if `mode` is set to `img` or `rgb_array`, will return an image array.
         """
         return self.default_viewer.render(mode, verbose, hide_background, hide_grid, hide_edges, hide_voxels)
 

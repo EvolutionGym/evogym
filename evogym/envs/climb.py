@@ -10,6 +10,7 @@ import random
 import math
 import numpy as np
 import os
+from typing import Dict, Any, Optional
 
 class ClimbBase(BenchmarkBase):
     
@@ -17,9 +18,9 @@ class ClimbBase(BenchmarkBase):
         
         super().__init__(world)
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         obs = np.concatenate((
@@ -27,7 +28,7 @@ class ClimbBase(BenchmarkBase):
             self.get_relative_pos_obs("robot"),
             ))
 
-        return obs
+        return obs, {}
 
 
 class Climb0(ClimbBase):
@@ -45,8 +46,8 @@ class Climb0(ClimbBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -79,8 +80,8 @@ class Climb0(ClimbBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class Climb1(ClimbBase):
 
@@ -97,8 +98,8 @@ class Climb1(ClimbBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -131,8 +132,8 @@ class Climb1(ClimbBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class Climb2(ClimbBase):
 
@@ -150,8 +151,8 @@ class Climb2(ClimbBase):
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 3
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
     def step(self, action):
 
@@ -182,12 +183,12 @@ class Climb2(ClimbBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
     
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         obs = np.concatenate((
@@ -197,4 +198,4 @@ class Climb2(ClimbBase):
             self.get_ceil_obs("robot", ["pipe"], self.sight_dist),
             ))
 
-        return obs
+        return obs, {}

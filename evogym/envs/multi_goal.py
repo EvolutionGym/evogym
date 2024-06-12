@@ -10,6 +10,7 @@ import random
 import math
 import numpy as np
 import os
+from typing import Dict, Any, Optional
 
 class Goal():
     def __init__(self, name, requirements = None):
@@ -103,8 +104,8 @@ class BiWalk(GoalBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(5 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(5 + num_robot_points,), dtype=float)
 
         self.set_random_goals(20, 50, 100)
 
@@ -171,12 +172,12 @@ class BiWalk(GoalBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         self.current_goal = 0
         self.set_random_goals(20, 50, 100)
@@ -196,4 +197,4 @@ class BiWalk(GoalBase):
             })
         ))
 
-        return obs
+        return obs, {}
