@@ -1,16 +1,13 @@
 # Evolution Gym
 
-<div style="border: 2px solid red; padding: 10px; border-radius: 5px; background-color: #fdd; color: red; margin-bottom: 10px;">
-  <strong>Warning:</strong> This branch is under active development!
-</div>
-
-
-Version 2 of `evogym` aims to make the following improvements:
-- Pip-installable, with wheels for common builds
-- Pip-installable, with wheels for common builds
-- Separation of requirements between core `evogym` library and `examples`
-- Modernize requirements (python, gym, numpy)
-- Tests
+> [!CAUTION]
+> This branch is under active development!
+> 
+> Version 2 of `evogym` aims to make the following improvements:
+> - Separation of requirements between core `evogym` library and `examples`
+> - Modernize requirements (python, gym, numpy)
+> - Pip-installable, with wheels for common builds
+> - Tests
 
 A large-scale benchmark for co-optimizing the design and control of soft robots. As seen in [Evolution Gym: A Large-Scale Benchmark for Evolving Soft Robots](https://evolutiongym.github.io/) (**NeurIPS 2021**).
 
