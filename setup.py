@@ -57,16 +57,8 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
-
+# Install c++ package via cmake
 setup(
-    name="evogym",
-    packages=['evogym', 'evogym.envs'],
-    package_dir={
-        'evogym': 'evogym',
-        'evogym.envs': 'evogym/envs'},
-    package_data={
-        "evogym.envs": [os.path.join('sim_files', '*.json')] #["*.json", "*.sob"],
-    },
     ext_modules=[CMakeExtension('evogym.simulator_cpp', 'evogym/simulator')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
