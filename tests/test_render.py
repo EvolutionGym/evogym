@@ -13,10 +13,10 @@ class RenderTest(TestCase):
 
         for _ in range(100):
             action = env.action_space.sample() - 1
-            ob, reward, done, info = env.step(action)
+            ob, reward, terminated, truncated, info = env.step(action)
             env.render()
 
-            if done:
+            if terminated or truncated:
                 env.reset()
 
         env.close()
