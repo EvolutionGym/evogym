@@ -134,6 +134,13 @@ class EvoViewer():
         if self._has_init_viewer:
             self._viewer.hide_debug_window()
     
+    def close(self,) -> None:
+        """
+        Close the viewer.
+        """
+        if self._has_init_viewer:
+            self._viewer.close()
+    
     def track_objects(self, *objects: Tuple[str]) -> None:
         """
         Set objects for the viewer to automatically track. The viewer tracks objects by adjusting its `pos` and `view_size` automatically every time before rendering.

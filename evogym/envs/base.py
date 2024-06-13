@@ -119,7 +119,9 @@ class EvoGymBase(gym.Env):
         """
         Close the simulation.
         """
-        self.default_viewer.hide_debug_window() 
+        self.default_viewer.close()
+        del self._default_viewer
+        del self._sim
 
     def get_actuator_indices(self, robot_name: str) -> np.ndarray:
         """
