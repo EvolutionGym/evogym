@@ -1,7 +1,7 @@
-import gym
-from gym import error, spaces
-from gym import utils
-from gym.utils import seeding
+import gymnasium as gym
+from gymnasium import error, spaces
+from gymnasium import utils
+from gymnasium.utils import seeding
 
 from evogym import *
 from evogym.envs import BenchmarkBase
@@ -15,14 +15,20 @@ from typing import Dict, Any, Optional
 
 class Flipping(BenchmarkBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Flipper-v0.json'))
         self.world.add_from_array('robot', body, 60, 1, connections=connections)
 
         # init sim
-        BenchmarkBase.__init__(self, self.world)
+        BenchmarkBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size

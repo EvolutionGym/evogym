@@ -1,8 +1,8 @@
 from evogym.envs.base import EvoGymBase
-import gym
-from gym import error, spaces
-from gym import utils
-from gym.utils import seeding
+import gymnasium as gym
+from gymnasium import error, spaces
+from gymnasium import utils
+from gymnasium.utils import seeding
 
 from evogym import *
 from evogym.envs import BenchmarkBase
@@ -15,8 +15,14 @@ from typing import Dict, Any, Optional
 
 class StairsBase(BenchmarkBase):
     
-    def __init__(self, world):
-        super().__init__(world)
+    def __init__(
+        self,
+        world: EvoWorld,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
+
+        super().__init__(world=world, render_mode=render_mode, render_options=render_options)
 
     def get_reward(self, robot_pos_init, robot_pos_final):
         
@@ -44,14 +50,20 @@ class StairsBase(BenchmarkBase):
 
 class StepsUp(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'UpStepper-v0.json'))
         self.world.add_from_array('robot', body, 1, 1, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
@@ -103,14 +115,20 @@ class StepsUp(StairsBase):
 
 class StepsDown(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'DownStepper-v0.json'))
         self.world.add_from_array('robot', body, 1, 11, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
@@ -162,14 +180,20 @@ class StepsDown(StairsBase):
 
 class WalkingBumpy(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'ObstacleTraverser-v0.json'))
         self.world.add_from_array('robot', body, 2, 1, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
@@ -222,14 +246,20 @@ class WalkingBumpy(StairsBase):
 
 class WalkingBumpy2(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'ObstacleTraverser-v1.json'))
         self.world.add_from_array('robot', body, 2, 4, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
@@ -279,14 +309,20 @@ class WalkingBumpy2(StairsBase):
 
 class VerticalBarrier(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
         
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Hurdler-v0.json'))
         self.world.add_from_array('robot', body, 2, 4, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
@@ -334,14 +370,20 @@ class VerticalBarrier(StairsBase):
 
 class FloatingPlatform(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'PlatformJumper-v0.json'))
         self.world.add_from_array('robot', body, 1, 6, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
@@ -413,14 +455,20 @@ class FloatingPlatform(StairsBase):
 
 class Gaps(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'GapJumper-v0.json'))
         self.world.add_from_array('robot', body, 1, 6, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
@@ -487,7 +535,13 @@ class Gaps(StairsBase):
 
 class BlockSoup(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Traverser-v0.json'))
@@ -527,7 +581,7 @@ class BlockSoup(StairsBase):
             count += 1
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
