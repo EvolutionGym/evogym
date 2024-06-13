@@ -1,8 +1,8 @@
 from evogym.envs.base import EvoGymBase
-import gym
-from gym import error, spaces
-from gym import utils
-from gym.utils import seeding
+import gymnasium as gym
+from gymnasium import error, spaces
+from gymnasium import utils
+from gymnasium.utils import seeding
 
 from evogym import *
 from evogym.envs import BenchmarkBase
@@ -11,11 +11,18 @@ import random
 import math
 import numpy as np
 import os
+from typing import Dict, Any, Optional
 
 class StairsBase(BenchmarkBase):
     
-    def __init__(self, world):
-        super().__init__(world)
+    def __init__(
+        self,
+        world: EvoWorld,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
+
+        super().__init__(world=world, render_mode=render_mode, render_options=render_options)
 
     def get_reward(self, robot_pos_init, robot_pos_final):
         
@@ -25,9 +32,9 @@ class StairsBase(BenchmarkBase):
         reward = (robot_com_pos_final[0] - robot_com_pos_init[0])
         return reward
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         robot_ort = self.object_orientation_at_time(self.get_time(), "robot")
@@ -38,27 +45,33 @@ class StairsBase(BenchmarkBase):
             self.get_floor_obs("robot", ["ground"], self.sight_dist),
             ))
 
-        return obs
+        return obs, {}
 
 
 class StepsUp(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'UpStepper-v0.json'))
         self.world.add_from_array('robot', body, 1, 1, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
     def step(self, action):
 
@@ -97,27 +110,33 @@ class StepsUp(StairsBase):
             done = True
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class StepsDown(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'DownStepper-v0.json'))
         self.world.add_from_array('robot', body, 1, 11, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
     def step(self, action):
 
@@ -156,27 +175,33 @@ class StepsDown(StairsBase):
             done = True
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class WalkingBumpy(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'ObstacleTraverser-v0.json'))
         self.world.add_from_array('robot', body, 2, 1, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
 
     def step(self, action):
@@ -216,27 +241,33 @@ class WalkingBumpy(StairsBase):
             done = True
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class WalkingBumpy2(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'ObstacleTraverser-v1.json'))
         self.world.add_from_array('robot', body, 2, 4, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
 
     def step(self, action):
@@ -273,27 +304,33 @@ class WalkingBumpy2(StairsBase):
             done = True
             reward += 2.0 
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class VerticalBarrier(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
         
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Hurdler-v0.json'))
         self.world.add_from_array('robot', body, 2, 4, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
 
     def step(self, action):
@@ -328,27 +365,33 @@ class VerticalBarrier(StairsBase):
             done = True
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class FloatingPlatform(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'PlatformJumper-v0.json'))
         self.world.add_from_array('robot', body, 1, 6, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
         # terrain
         self.terrain_list = ["platform_1", "platform_2", "platform_3", "platform_4", "platform_5", "platform_6", "platform_7"]
@@ -392,12 +435,12 @@ class FloatingPlatform(StairsBase):
             reward -= 3.0
         
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        EvoGymBase.reset(self)
+        EvoGymBase.reset(self, seed=seed, options=options)
 
         # observation
         robot_ort = self.object_orientation_at_time(self.get_time(), "robot")
@@ -408,26 +451,32 @@ class FloatingPlatform(StairsBase):
             self.get_floor_obs("robot", self.terrain_list, self.sight_dist),
             ))
 
-        return obs
+        return obs, {}
 
 class Gaps(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'GapJumper-v0.json'))
         self.world.add_from_array('robot', body, 1, 6, connections=connections)
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
         # terrain
         self.terrain_list = ["platform_1", "platform_2", "platform_3", "platform_4", "platform_5"]
@@ -466,12 +515,12 @@ class Gaps(StairsBase):
             reward -= 3.0
             done = True
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        EvoGymBase.reset(self)
+        EvoGymBase.reset(self, seed=seed, options=options)
 
         # observation
         robot_ort = self.object_orientation_at_time(self.get_time(), "robot")
@@ -482,11 +531,17 @@ class Gaps(StairsBase):
             self.get_floor_obs("robot", self.terrain_list, self.sight_dist),
             ))
 
-        return obs
+        return obs, {}
 
 class BlockSoup(StairsBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Traverser-v0.json'))
@@ -526,15 +581,15 @@ class BlockSoup(StairsBase):
             count += 1
 
         # init sim
-        StairsBase.__init__(self, self.world)
+        StairsBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(3 + num_robot_points + (2*self.sight_dist +1),), dtype=float)
 
     def step(self, action):
 
@@ -570,12 +625,12 @@ class BlockSoup(StairsBase):
             done = True
             reward += 2.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         robot_ort = self.object_orientation_at_time(self.get_time(), "robot")
@@ -586,4 +641,4 @@ class BlockSoup(StairsBase):
             self.get_floor_obs("robot", self.terrain_list, self.sight_dist),
             ))
 
-        return obs
+        return obs, {}

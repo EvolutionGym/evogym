@@ -29,7 +29,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "gym==0.22.0",
+    "gymnasium",
     "numpy",
 ]
 
