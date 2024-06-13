@@ -43,4 +43,4 @@ jobs:
       - name: Install evolution gym
         run: pip install -e .
       - name: Run test
-        run: xvfb-run python -m pytest -s -v tests/screen_free/test_img_render_modes.py
+        run: xvfb-run python -m pytest -s -v -n auto -m lite

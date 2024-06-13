@@ -7,20 +7,25 @@ from itertools import product
 import evogym.envs
 from evogym import sample_robot
 
-# @pytest.mark.parametrize(
-#     "env_name, render_mode",
-#     list(product(
-#         evogym.BASELINE_ENV_NAMES,
-#         [None, "img", "rgb_array"],
-#     ))
-# )
-@pytest.mark.parametrize(
-    "env_name, render_mode",
-    list(product(
-        ["ObstacleTraverser-v1", "Traverser-v0"],
+LITE_TEST_ENV_NAMES = [
+    "Pusher-v0",
+    "Walker-v0",
+    "Traverser-v0",
+]
+
+def get_params():
+    params = product(
+        evogym.BASELINE_ENV_NAMES,
         [None, "img", "rgb_array"],
-    ))
-)
+    )
+    return [
+        param if param[0] not in LITE_TEST_ENV_NAMES 
+        else pytest.param(*param, marks=pytest.mark.lite) 
+        for param in params 
+    ]
+    
+    
+@pytest.mark.parametrize("env_name, render_mode", get_params())
 def test_render(env_name, render_mode):
     """
     - Env can render to none and to image

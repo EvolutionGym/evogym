@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from pytest import raises
 from typing import List, Tuple
 
@@ -8,6 +9,7 @@ from evogym.utils import (
     is_connected, has_actuator, get_full_connectivity
 )
  
+@pytest.mark.lite
 def test_get_uniform():
     ones = get_uniform(1)
     assert np.allclose(ones, np.ones(1)), (
@@ -18,7 +20,8 @@ def test_get_uniform():
     assert np.allclose(one_thirds, np.ones(3) / 3), (
         f"Expected {np.ones(3) / 3}, got {one_thirds}"
     )
-    
+
+@pytest.mark.lite    
 def test_draw():
     result = draw([0.2])
     assert result == 0, f"Expected 0, got {result}"
@@ -38,7 +41,8 @@ def test_draw():
     for i in range(10):
         result = draw(pd)
         assert result in list(range(10)), f"Expected result to be between 0 and 9, got {result}"
-        
+    
+@pytest.mark.lite    
 def test_has_actuator():
     h_act, v_act = VOXEL_TYPES['H_ACT'], VOXEL_TYPES['V_ACT']
     others = [
@@ -109,7 +113,8 @@ def test_is_connected():
         [empty, others[1], others[0]]
     ])
     assert not is_connected(robot), "Expected not connected"
-    
+
+@pytest.mark.lite    
 def test_get_full_connectivity():
     empty = VOXEL_TYPES['EMPTY']
     others = [
@@ -157,7 +162,7 @@ def test_get_full_connectivity():
     assert connections.shape[0] == 2, "Expected 2"
     connections_contains_all(connections, [(0, 1), (1, 4), (4, 5)])
     
-
+@pytest.mark.lite
 def test_sample_robot():
     
     h_act, v_act, empty = VOXEL_TYPES['H_ACT'], VOXEL_TYPES['V_ACT'], VOXEL_TYPES['EMPTY']

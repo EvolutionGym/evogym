@@ -7,6 +7,13 @@ from itertools import product
 import evogym.envs
 from evogym import sample_robot
 
+LITE_TEST_ENV_NAMES = [
+    "Pusher-v0",
+    "Walker-v0",
+    "Traverser-v0",
+]
+
+@pytest.mark.lite
 @pytest.mark.parametrize(
     "render_mode, add_options",
     list(product(
@@ -41,9 +48,15 @@ def test_render_modes(render_mode, add_options):
         ob, reward, terminated, truncated, info = env.step(action)
         
     env.close()
-    
-# @pytest.mark.parametrize("env_name", evogym.BASELINE_ENV_NAMES)
-@pytest.mark.parametrize("env_name", ["ObstacleTraverser-v1", "Traverser-v0"])
+
+def get_all_env_render_params():
+    return [
+        env_name if env_name not in LITE_TEST_ENV_NAMES 
+        else pytest.param(env_name, marks=pytest.mark.lite) 
+        for env_name in evogym.BASELINE_ENV_NAMES 
+    ]
+
+@pytest.mark.parametrize("env_name", get_all_env_render_params())
 def test_all_env_render(env_name):
     """
     - Env can render to screen

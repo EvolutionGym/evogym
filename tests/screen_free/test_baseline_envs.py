@@ -5,7 +5,20 @@ import warnings
 import evogym.envs
 from evogym import sample_robot
 
-@pytest.mark.parametrize("env_name", evogym.BASELINE_ENV_NAMES)
+LITE_TEST_ENV_NAMES = [
+    "Pusher-v0",
+    "Walker-v0",
+    "Traverser-v0",
+]
+
+def get_params():
+    return [
+        env_name if env_name not in LITE_TEST_ENV_NAMES 
+        else pytest.param(env_name, marks=pytest.mark.lite) 
+        for env_name in evogym.BASELINE_ENV_NAMES 
+    ]
+
+@pytest.mark.parametrize("env_name", get_params())
 def test_env_creatable_and_has_correct_api(env_name):
     """
     - Env is creatable
