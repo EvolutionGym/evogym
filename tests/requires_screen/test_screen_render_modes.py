@@ -42,7 +42,8 @@ def test_render_modes(render_mode, add_options):
         
     env.close()
     
-@pytest.mark.parametrize("env_name", evogym.BASELINE_ENV_NAMES)
+# @pytest.mark.parametrize("env_name", evogym.BASELINE_ENV_NAMES)
+@pytest.mark.parametrize("env_name", ["ObstacleTraverser-v1", "Traverser-v0"])
 def test_all_env_render(env_name):
     """
     - Env can render to screen

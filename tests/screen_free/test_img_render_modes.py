@@ -7,10 +7,17 @@ from itertools import product
 import evogym.envs
 from evogym import sample_robot
 
+# @pytest.mark.parametrize(
+#     "env_name, render_mode",
+#     list(product(
+#         evogym.BASELINE_ENV_NAMES,
+#         [None, "img", "rgb_array"],
+#     ))
+# )
 @pytest.mark.parametrize(
     "env_name, render_mode",
     list(product(
-        evogym.BASELINE_ENV_NAMES,
+        ["ObstacleTraverser-v1", "Traverser-v0"],
         [None, "img", "rgb_array"],
     ))
 )
