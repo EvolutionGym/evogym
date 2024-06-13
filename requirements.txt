@@ -16,3 +16,5 @@ PyOpenGL-accelerate==3.1.5
 torch==1.10.2
 ttkbootstrap==1.5.1
 typing==3.7.4.3
+pytest
+pytest-xdist
