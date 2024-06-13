@@ -21,6 +21,7 @@ PYBIND11_MODULE(simulator_cpp, m) {
 		.def("render", &Interface::render, py::arg("camera"), py::arg("hide_background") = false, py::arg("hide_grid") = false, py::arg("hide_edges") = false, py::arg("hide_boxels") = false, py::arg("dont_clear") = false)
 		.def("show_debug_window", &Interface::show_debug_window)
 		.def("hide_debug_window", &Interface::hide_debug_window)
+		.def("close", &Interface::close)
 		.def("get_debug_window_pos", &Interface::get_debug_window_pos, py::return_value_policy::copy);
 
 	py::class_<Sim>(m, "Sim")

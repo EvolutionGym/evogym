@@ -68,6 +68,7 @@ public:
 
 	void show_debug_window();
 	void hide_debug_window();
+	void close();
 	vector<int> get_debug_window_pos();
 
 	GLFWwindow* get_debug_window_ref();
