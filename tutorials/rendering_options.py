@@ -2,6 +2,7 @@ from evogym import EvoWorld, EvoSim, EvoViewer, sample_robot
 import os
 import numpy as np
 import cv2
+import argparse
 
 ### CREATE A SIMPLE ENVIRONMENT ###
 
@@ -27,13 +28,18 @@ viewer.track_objects('robot', 'box')
 
 ### SELECT A RENDERING OPTION ###
 
-options = ['to-debug-screen', 'to-numpy-array', 'special-options', 'very-fast']
-option = options[0]
-
-print(f'\nUsing rendering option {option}...\n')
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--render-option', 
+    choices=['to-debug-screen', 'to-numpy-array', 'special-options', 'very-fast'],
+    help='Select a rendering option from: to-debug-screen, to-numpy-array, special-options, very-fast',
+    default='to-debug-screen',
+)
+args = parser.parse_args()
+print(f'\nUsing rendering option {args.render_option}...\n')
 
 # if the 'very-fast' option is chosen, set the rendering speed to be unlimited
-if option == 'very-fast':
+if args.render_option == 'very-fast':
     viewer.set_target_rps(None)
 
 for i in range(1000):
@@ -48,19 +54,19 @@ for i in range(1000):
     sim.step()
 
     # step and render to a debug screen
-    if option == 'to-debug-screen':
+    if args.render_option == 'to-debug-screen':
         viewer.render('screen')
 
     # step and render to a numpy array
     # use open cv to visualize output
-    if option == 'to-numpy-array':
+    if args.render_option == 'to-numpy-array':
         img = viewer.render('img')
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.waitKey(1)
         cv2.imshow("Open CV Window", img)
 
     # rendering with more options
-    if option == 'special-options':   
+    if args.render_option == 'special-options':   
         img = viewer.render(
             'screen', 
             verbose = True,
@@ -70,7 +76,8 @@ for i in range(1000):
             hide_voxels = False)
 
     # rendering as fast as possible
-    if option == 'very-fast':
+    if args.render_option == 'very-fast':
         viewer.render('screen', verbose=True)
 
 cv2.destroyAllWindows()
+viewer.close()
