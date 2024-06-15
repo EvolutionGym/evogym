@@ -1,33 +1,24 @@
+import os
 import numpy as np
 import json
 import shutil
-import random
+import argparse
 
-import sys
-import os
-curr_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.join(curr_dir, '..')
-external_dir = os.path.join(root_dir, 'externals')
-sys.path.insert(0, root_dir)
-sys.path.insert(1, os.path.join(external_dir, 'PyTorch-NEAT'))
-sys.path.insert(1, os.path.join(external_dir, 'pytorch_a2c_ppo_acktr_gail'))
-
-from ppo import run_ppo
+from ppo.run import run_ppo
+from ppo.args import add_ppo_args
 import utils.mp_group as mp
-from utils.algo_utils import *
-
+import evogym.envs
 from evogym import WorldObject
 
 class SimJob():
 
-    def __init__(self, name, robots, envs, train_iters):
+    def __init__(self, name, robots, envs):
         self.name = name
         self.robots = robots
         self.envs = envs
-        self.train_iters = train_iters
 
     def get_data(self,):
-        return {'robots': self.robots, 'envs': self.envs, 'train_iters': self.train_iters}
+        return {'robots': self.robots, 'envs': self.envs}
 
 class RunData():
 
@@ -41,14 +32,13 @@ class RunData():
         self.reward = reward
 
 def read_robot_from_file(file_name):
-    global root_dir
     possible_paths = [
         os.path.join(file_name),
         os.path.join(f'{file_name}.npz'),
         os.path.join(f'{file_name}.json'),
-        os.path.join(root_dir, 'world_data', file_name),
-        os.path.join(root_dir, 'world_data', f'{file_name}.npz'),
-        os.path.join(root_dir, 'world_data', f'{file_name}.json'),
+        os.path.join('world_data', file_name),
+        os.path.join('world_data', f'{file_name}.npz'),
+        os.path.join('world_data', f'{file_name}.json'),
     ]
 
     best_path = None
@@ -78,14 +68,18 @@ def clean_name(name):
     return name
 
 def run_group_ppo(experiment_name, sim_jobs): 
+    ### ARGS ###
+    parser = argparse.ArgumentParser(description='Arguments for group PPO script')
+    add_ppo_args(parser)
+    args = parser.parse_args()
 
-    ### STARTUP: MANAGE DIRECTORIES ###
-    exp_path = os.path.join(root_dir, "saved_data", experiment_name)
+    ### MANAGE DIRECTORIES ###
+    exp_path = os.path.join("saved_data", experiment_name)
     try:
         os.makedirs(exp_path)
     except:
         print(f'THIS EXPERIMENT ({experiment_name}) ALREADY EXISTS')
-        print("Override? (y/n): ", end="")
+        print("Delete and override? (y/n): ", end="")
         ans = input()
         if ans.lower() == "y":
             shutil.rmtree(exp_path)
@@ -114,8 +108,6 @@ def run_group_ppo(experiment_name, sim_jobs):
         except:
             pass
 
-        tc = TerminationCondition(job.train_iters)
-
         count = 0
         for env_name in job.envs:
             out[job.name][env_name] = {}
@@ -127,9 +119,10 @@ def run_group_ppo(experiment_name, sim_jobs):
                 
                 temp_path = os.path.join(save_path_structure, f'{clean_name(robot_name)}_{env_name}.npz')
                 np.savez(temp_path, structure[0], structure[1])
-
-                ppo_args = ((structure[0], structure[1]), tc, (save_path_controller, f'{clean_name(robot_name)}_{env_name}'), env_name, True)
+                
+                ppo_args = (args, structure[0], env_name, save_path_controller, f'{clean_name(robot_name)}_{env_name}', structure[1])
                 group.add_job(run_ppo, ppo_args, callback=run_data[-1].set_reward)
+                
     group.run_jobs(2)
 
     ### SAVE RANKING TO FILE ##

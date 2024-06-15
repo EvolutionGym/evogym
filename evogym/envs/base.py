@@ -392,15 +392,6 @@ class BenchmarkBase(EvoGymBase):
 
         EvoGymBase.__init__(self, world=world, render_mode=render_mode, render_options=render_options)
         self.default_viewer.track_objects('robot')
-
-    def step(self, action):
-
-        action_copy = {}
-
-        for robot_name, a in action.items():
-            action_copy[robot_name] = a + 1
-
-        return super().step(action_copy)
     
     def pos_at_time(self, time):
         return super().pos_at_time(time)*self.VOXEL_SIZE

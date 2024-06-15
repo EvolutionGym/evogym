@@ -1,9 +1,9 @@
 import os
 import shutil
-import random
 import numpy as np
 import torch
 import neat
+import argparse
 
 import sys
 curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,16 +11,14 @@ root_dir = os.path.join(curr_dir, '..')
 external_dir = os.path.join(root_dir, 'externals')
 sys.path.insert(0, root_dir)
 sys.path.insert(1, os.path.join(external_dir, 'PyTorch-NEAT'))
-sys.path.insert(1, os.path.join(external_dir, 'pytorch_a2c_ppo_acktr_gail'))
 
 from pytorch_neat.cppn import create_cppn
 from .parallel import ParallelEvaluator
 from .population import Population
 
-from utils.algo_utils import TerminationCondition
-from ppo import run_ppo
-from evogym import is_connected, has_actuator, get_full_connectivity, hashable
+from ppo.run import run_ppo
 import evogym.envs
+from evogym import is_connected, has_actuator, get_full_connectivity, hashable
 
 
 def get_cppn_input(structure_shape):
@@ -43,15 +41,16 @@ def get_robot_from_genome(genome, config):
 
 def eval_genome_fitness(genome, config, genome_id, generation):
     robot = get_robot_from_genome(genome, config)
+    args, env_name = config.extra_info['args'], config.extra_info['env_name']
+    
     connectivity = get_full_connectivity(robot)
     save_path_generation = os.path.join(config.extra_info['save_path'], f'generation_{generation}')
     save_path_structure = os.path.join(save_path_generation, 'structure', f'{genome_id}')
     save_path_controller = os.path.join(save_path_generation, 'controller')
     np.savez(save_path_structure, robot, connectivity)
+
     fitness = run_ppo(
-        structure=(robot, connectivity),
-        termination_condition=TerminationCondition(config.extra_info['train_iters']),
-        saving_convention=(save_path_controller, genome_id),
+        args, robot, env_name, save_path_controller, f'{genome_id}', connectivity
     )
     return fitness
 
@@ -93,20 +92,23 @@ class SaveResultReporter(neat.BaseReporter):
             f.write(out)
 
 def run_cppn_neat(
-        experiment_name,
-        structure_shape,
-        pop_size,
-        max_evaluations,
-        train_iters,
-        num_cores,
-    ):
+    args: argparse.Namespace
+):
+    exp_name, env_name, pop_size, structure_shape, max_evaluations, num_cores = (
+        args.exp_name,
+        args.env_name,
+        args.pop_size,
+        args.structure_shape,
+        args.max_evaluations,
+        args.num_cores,
+    )
 
-    save_path = os.path.join(root_dir, 'saved_data', experiment_name)
+    save_path = os.path.join('saved_data', exp_name)
 
     try:
         os.makedirs(save_path)
     except:
-        print(f'THIS EXPERIMENT ({experiment_name}) ALREADY EXISTS')
+        print(f'THIS EXPERIMENT ({exp_name}) ALREADY EXISTS')
         print('Override? (y/n): ', end='')
         ans = input()
         if ans.lower() == 'y':
@@ -120,8 +122,7 @@ def run_cppn_neat(
     with open(save_path_metadata, 'w') as f:
         f.write(f'POP_SIZE: {pop_size}\n' \
             f'STRUCTURE_SHAPE: {structure_shape[0]} {structure_shape[1]}\n' \
-            f'MAX_EVALUATIONS: {max_evaluations}\n' \
-            f'TRAIN_ITERS: {train_iters}\n')
+            f'MAX_EVALUATIONS: {max_evaluations}\n')
 
     structure_hashes = {}
 
@@ -134,9 +135,10 @@ def run_cppn_neat(
         config_path,
         extra_info={
             'structure_shape': structure_shape,
-            'train_iters': train_iters,
             'save_path': save_path,
             'structure_hashes': structure_hashes,
+            'args': args, # args for run_ppo
+            'env_name': env_name,
         },
         custom_config=[
             ('NEAT', 'pop_size', pop_size),
