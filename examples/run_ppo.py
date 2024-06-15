@@ -19,10 +19,10 @@ if __name__ == "__main__":
         "--env-name", default="Walker-v0", type=str, help="Environment name (default: Walker-v0)"
     )
     parser.add_argument(
-        "--save-dir", default="saved_data", type=str, help="Directory to save agent logs (default: saved_data)"
+        "--save-dir", default="saved_data", type=str, help="Parent directory in which to save data(default: saved_data)"
     )
     parser.add_argument(
-        "--exp-name", default="test_ppo", type=str, help="Name of the model to save (default: test_ppo)"
+        "--exp-name", default="test_ppo", type=str, help="Name of experiment. Data saved to <save-dir/exp-name> (default: test_ppo)"
     )
     parser.add_argument(
         "--robot-path", default=os.path.join("world_data", "speed_bot.json"), type=str, help="Path to the robot json file (default: world_data/speed_bot.json)"
