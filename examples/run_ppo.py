@@ -7,9 +7,9 @@ from stable_baselines3 import PPO
 import evogym.envs
 from evogym import WorldObject
 
-from new_ppo.args import add_ppo_args
-from new_ppo.run import run_ppo
-from new_ppo.eval import eval_policy
+from ppo.args import add_ppo_args
+from ppo.run import run_ppo
+from ppo.eval import eval_policy
     
 if __name__ == "__main__":    
     
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         "--save-dir", default="saved_data", type=str, help="Directory to save agent logs (default: saved_data)"
     )
     parser.add_argument(
-        "--exp-name", default="ppo_test", type=str, help="Name of the model to save (default: ppo_test)"
+        "--exp-name", default="test_ppo", type=str, help="Name of the model to save (default: test_ppo)"
     )
     parser.add_argument(
         "--robot-path", default=os.path.join("world_data", "speed_bot.json"), type=str, help="Path to the robot json file (default: world_data/speed_bot.json)"
