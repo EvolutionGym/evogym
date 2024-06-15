@@ -22,7 +22,7 @@ description = "Evolution Gym: A benchmark for developing and evaluating soft rob
 readme = "README.md"
 license = {file = "LICENSE"}
 keywords = ["evolution", "gym", "evolution gym", "soft robotics", "benchmark", "co-design"]
-requires-python = ">=3.7"
+requires-python = ">=3.7, <=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

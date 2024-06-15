@@ -48,7 +48,7 @@ jobs:
 
       - name: Install deb dependencies
         if: ${{ matrix.platform_id == 'manylinux_x86_64' }}
-        run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev xvfb
+        run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev xvfb xrandr-dev
 
       # Build wheels
       - name: Build wheels
