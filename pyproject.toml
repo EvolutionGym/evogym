@@ -17,8 +17,8 @@ evogym = "evogym"
 skip = ["*-win32", "*-manylinux_i686"]
 
 [tool.cibuildwheel.linux]
-manylinux-x86_64-image = "quay.io/pypa/manylinux2010_x86_64:latest"
-manylinux-pypy_x86_64-image = "quay.io/pypa/manylinux2010_x86_64:latest"
+manylinux-x86_64-image = "quay.io/pypa/manylinux_1_2_x86_64:latest"
+manylinux-pypy_x86_64-image = "quay.io/pypa/manylinux_1_2_x86_64:latest"
 before-all = "yum install xorg-dev libglu1-mesa-dev libglew-dev xvfb"
 test-command = "echo 'installed'"
 
