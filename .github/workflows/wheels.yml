@@ -14,10 +14,10 @@ jobs:
           - os: windows-latest
             platform_id: win_amd64
           
-          # Linux 64 bit manylinux2014
+          # Linux 64 bit
           - os: ubuntu-latest
             platform_id: manylinux_x86_64
-            manylinux_image: manylinux_2_24
+            # manylinux_image: manylinux_2_24
 
           # MacOS x86_64
           - os: macos-12

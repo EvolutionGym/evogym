@@ -17,6 +17,7 @@ evogym = "evogym"
 skip = ["*-win32", "*-manylinux_i686"]
 
 [tool.cibuildwheel.linux]
+manylinux-x86_64-image = "dockcross/manylinux-x64"
 before-all = "yum install xorg-dev libglu1-mesa-dev libglew-dev xvfb"
 test-command = "echo 'installed'"
 
