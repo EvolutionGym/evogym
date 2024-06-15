@@ -12,6 +12,10 @@ evogym = "evogym"
 [tool.setuptools.package-data]
 "evogym.envs" = ["sim_files/*.json"]
 
+[tool.cibuildwheel]
+# Skip 32-bit builds
+skip = ["*-win32", "*-manylinux_i686"]
+
 [project]
 name = "evogym"
 version = "2.0.0"
