@@ -16,8 +16,8 @@ jobs:
           
           # Linux 64 bit manylinux2014
           - os: ubuntu-latest
-            # platform_id: manylinux_x86_64
-            # manylinux_image: manylinux2014
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux_2_24
 
           # MacOS x86_64
           - os: macos-12
