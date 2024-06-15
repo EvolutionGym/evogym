@@ -9,13 +9,11 @@ if __name__ == "__main__":
                 name = 'big',
                 robots = ['speed_bot', 'carry_bot'],
                 envs = ['Walker-v0', 'Carrier-v0'],
-                train_iters = 50
             ),
             SimJob(
                 name = 'small',
                 robots = ['speed_bot'],
                 envs = ['Walker-v0'],
-                train_iters = 50
             )
         ]
     )

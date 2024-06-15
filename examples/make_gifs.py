@@ -1,20 +1,14 @@
-
+import os
 import numpy as np
 import torch
-import gym
 from PIL import Image
 import imageio
 from pygifsicle import optimize
 
-import os, sys
-root_dir = os.path.dirname(os.path.abspath(__file__))
-external_dir = os.path.join(root_dir, 'externals')
-sys.path.insert(0, root_dir)
-sys.path.insert(1, os.path.join(external_dir, 'pytorch_a2c_ppo_acktr_gail'))
-
+import evogym.envs
+from stable_baselines3 import PPO
+from stable_baselines3.common.env_util import make_vec_env
 from utils.algo_utils import *
-from ppo.envs import make_vec_envs
-from ppo.utils import get_vec_normalize
 import utils.mp_group as mp
 
 def get_generations(load_dir, exp_name):
@@ -37,10 +31,7 @@ def get_exp_gen_data(exp_name, load_dir, gen):
         robot_data.append((int(line.split()[0]), float(line.split()[1])))
     return robot_data
 
-def dummy_callback(_):
-    pass
-
-def save_robot_gif(out_path, env_name, body_path, ctrl_path):
+def save_robot_gif(out_path, env_name, body_path, ctrl_path, seed=42):
     global GIF_RESOLUTION
 
     structure_data = np.load(body_path)
@@ -48,43 +39,23 @@ def save_robot_gif(out_path, env_name, body_path, ctrl_path):
     for key, value in structure_data.items():
         structure.append(value)
     structure = tuple(structure)
-
-    env = make_vec_envs(env_name, structure, 1000, 1, None, None, device='cpu', allow_early_resets=False)
-    env.get_attr("default_viewer", indices=None)[0].set_resolution(GIF_RESOLUTION)
-                    
-    actor_critic, obs_rms = torch.load(ctrl_path, map_location='cpu')
-
-    vec_norm = get_vec_normalize(env)
-    if vec_norm is not None:
-        vec_norm.eval()
-        vec_norm.obs_rms = obs_rms
-
-    recurrent_hidden_states = torch.zeros(1, actor_critic.recurrent_hidden_state_size)
-    masks = torch.zeros(1, 1)
-
-    obs = env.reset()
-    img = env.render(mode='img')
-    reward = None
+    
+    model = PPO.load(ctrl_path)
+    
+    # Parallel environments
+    vec_env = make_vec_env(env_name, n_envs=1, seed=seed, env_kwargs={
+        'body': structure[0],
+        'connections': structure[1],
+        "render_mode": "img",
+    })
+    
+    obs = vec_env.reset()
+    imgs = [vec_env.env_method('render')[0]] # vec env is stupid; .render() dosent work
     done = False
-
-    imgs = []
-    # arrays = []
     while not done:
-
-        with torch.no_grad():
-            value, action, _, recurrent_hidden_states = actor_critic.act(
-                obs, recurrent_hidden_states, masks, deterministic=True)
-
-        obs, reward, done, _ = env.step(action)
-        img = env.render(mode='img')
-        imgs.append(img)
-
-        masks.fill_(0.0 if (done) else 1.0)
-
-        if done == True:
-            env.reset()
-
-    env.close()
+        action, _states = model.predict(obs, deterministic=True)
+        obs, reward, done, info = vec_env.step(action)
+        imgs.append(vec_env.env_method('render')[0])
 
     imageio.mimsave(f'{out_path}.gif', imgs, duration=(1/50.0))
     try:
@@ -120,7 +91,6 @@ class Robot():
                 out += f'{comp}_'
         return out[:-1]
     
-
 class Job():
     def __init__(
         self, 
@@ -212,7 +182,7 @@ class Job():
                 for idx, reward in get_exp_gen_data(exp_name, load_dir, gen):
                     robots.append(Robot(
                         body_path = os.path.join(load_dir, exp_name, f"generation_{gen}", "structure", f"{idx}.npz"),
-                        ctrl_path = os.path.join(load_dir, exp_name, f"generation_{gen}", "controller", f"robot_{idx}_controller.pt"),
+                        ctrl_path = os.path.join(load_dir, exp_name, f"generation_{gen}", "controller", f"{idx}.zip"),
                         reward = reward,
                         env_name = env_name,
                         exp_name = exp_name if len(self.experiment_names) != 1 else None,
@@ -231,25 +201,11 @@ class Job():
                 robot.body_path,
                 robot.ctrl_path
             )
-
-        # multiprocessing is currently broken
-        
-        # group = mp.Group()
-        # for i, robot in zip(ranks, robots):              
-        #     gif_args = (
-        #         os.path.join(save_dir, f'{i}_{robot}'),
-        #         robot.env_name,
-        #         robot.body_path,
-        #         robot.ctrl_path
-        #     )
-        #     group.add_job(save_robot_gif, gif_args, callback=dummy_callback)
-        # group.run_jobs(NUM_PROC)
     
 GIF_RESOLUTION = (1280/5, 720/5)
-# NUM_PROC = 8
 if __name__ == '__main__':
     exp_root = os.path.join('saved_data')
-    save_dir = os.path.join(root_dir, 'saved_data', 'all_media')
+    save_dir = os.path.join('saved_data', 'all_media')
 
     my_job = Job(
         name = 'test_ga',
