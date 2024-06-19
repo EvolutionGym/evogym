@@ -17,8 +17,11 @@ jobs:
           # Linux 64 bit
           - os: ubuntu-latest
             platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-            # manylinux_image: manylinux_2_24
+            manylinux_image: manylinux_2_28
+
+            # Many linux 2014 dosen't work due to an issue in GLEW:
+            # https://github.com/glfw/glfw/issues/2139
+            # manylinux_image: manylinux2014
 
           # MacOS x86_64
           - os: macos-12
