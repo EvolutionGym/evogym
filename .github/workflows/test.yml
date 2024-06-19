@@ -10,8 +10,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build_and_test:
     strategy:
+      fail-fast: false
       matrix:
         os:
           - "ubuntu-latest"
