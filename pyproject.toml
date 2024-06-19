@@ -17,6 +17,9 @@ evogym = "evogym"
 skip = ["*-win32", "*-manylinux_i686"]
 
 [tool.cibuildwheel.linux]
+
+manylinux-x86_64-image = "manylinux_2_28"
+# manylinux-pypy_x86_64-image = "quay.io/pypa/manylinux_1_2_x86_64:latest"
 # manylinux-x86_64-image = "quay.io/pypa/manylinux_1_2_x86_64:latest"
 # manylinux-pypy_x86_64-image = "quay.io/pypa/manylinux_1_2_x86_64:latest"
 before-all = "yum install -y libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel mesa-libGLU-devel"
