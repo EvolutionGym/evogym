@@ -43,5 +43,5 @@ jobs:
       - name: Install evolution gym
         run: pip install -e .
       - name: Run test
-        run: xvfb-run pytest -s -v -n auto -m lite
+        run: xvfb-run python -m pytest -s -v -n auto -m lite
         working-directory: tests
