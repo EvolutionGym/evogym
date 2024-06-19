@@ -19,7 +19,7 @@ jobs:
             platform_id: manylinux_x86_64
             manylinux_image: manylinux_2_28
 
-            # Many linux 2014 dosen't work due to an issue in GLEW:
+            # manylinux2014 dosen't work due to an issue in GLEW:
             # https://github.com/glfw/glfw/issues/2139
             # manylinux_image: manylinux2014
 
@@ -30,11 +30,6 @@ jobs:
           # MacOS arm64
           - os: macos-14
             platform_id: macosx_arm64
-
-        # os: [ubuntu-latest, windows-latest, macos-13, macos-14]
-        # os: [ubuntu-latest, windows-latest, macos-13, macos-14]
-        # python: [3.7, 3.8, 3.9, 3.10]
-        # python: [3.7]
 
     steps:
       - uses: actions/checkout@v4
@@ -48,15 +43,6 @@ jobs:
 
       - name: Install cibuildwheel
         run: python -m pip install cibuildwheel==2.19.0
-
-      # Install Linux dependencies
-      # - name: Update deb repository
-      #   if: ${{ matrix.platform_id == 'manylinux_x86_64' }}
-      #   run: sudo apt-get update
-
-      # - name: Install deb dependencies
-      #   if: ${{ matrix.platform_id == 'manylinux_x86_64' }}
-      #   run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev xvfb xrandr-dev
 
       # Build wheels
       - name: Build wheels
