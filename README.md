@@ -1,18 +1,15 @@
 # Evolution Gym
 
-> [!CAUTION]
-> This branch is under active development!
-> 
-> Version 2 of `evogym` aims to make the following improvements:
-> - Separation of requirements between core `evogym` library and `examples`
-> - Modernize requirements (python, gym, numpy)
-> - Pip-installable, with wheels for common builds
-> - Tests
+![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/wheels.yml/badge.svg)
+![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/test.yml/badge.svg)
 
 Evolution Gym is a large-scale benchmark for co-optimizing the design and control of soft robots. It provides a lightweight soft-body simulator wrapped with a gym-like interface for developing learning algorithms. Evogym also includes a suite of 32 locomotion and manipulation tasks, detailed on our [website](https://evolutiongym.github.io/all-tasks). Task suite evaluations are described in our [NeurIPS 2021 paper](https://arxiv.org/pdf/2201.09863).
 
-[//]: # (<img src="images/teaser.gif" alt="teaser" width="800"/>)
-![teaser](images/teaser.gif)
+> [!NOTE]
+> Evogym has been recently updated! TLDR: requirements have been modernized, and the library is now pip-installable.
+
+[//]: # (<img src="https://github.com/EvolutionGym/evogym/blob/main/images/teaser.gif" alt="teaser" width="800"/>)
+![teaser](https://github.com/EvolutionGym/evogym/blob/main/images/teaser.gif)
 
 # Installation
 
@@ -23,7 +20,11 @@ pip install --upgrade evogym
 ```
 
 > [!CAUTION]
-> This doesn't work yet -- coming soon!
+> This doesn't work yet -- coming soon! For now, you can install from test pypi:
+> ```shell
+> pip install "numpy<2.0.0" gymnasium
+> pip install -i https://test.pypi.org/simple/ evogym
+> ```
 
 ## From Source
 
