@@ -1,5 +1,8 @@
 # Evolution Gym
 
+![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/wheels.yml/badge.svg)
+![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/test.yml/badge.svg)
+
 Evolution Gym is a large-scale benchmark for co-optimizing the design and control of soft robots. It provides a lightweight soft-body simulator wrapped with a gym-like interface for developing learning algorithms. Evogym also includes a suite of 32 locomotion and manipulation tasks, detailed on our [website](https://evolutiongym.github.io/all-tasks). Task suite evaluations are described in our [NeurIPS 2021 paper](https://arxiv.org/pdf/2201.09863).
 
 > [!NOTE]
