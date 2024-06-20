@@ -146,9 +146,10 @@ pip install -r requirements-dev.txt
 
 ## Run Tests
 
-Run the full test suite:
+From within the `tests` directory run the full test suite:
 
 ```shell
+cd tests
 pytest -s -v -n auto
 ```
 
@@ -156,6 +157,7 @@ Or the lite test suite:
 
 
 ```shell
+cd tests
 pytest -s -v -n auto -m lite
 ```
 

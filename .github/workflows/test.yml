@@ -1,6 +1,6 @@
-name: Testing
+name: Test
 
-on: [push, pull_request]
+on: [push]
 
 permissions:
   contents: read
@@ -10,16 +10,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build_and_test:
     strategy:
+      fail-fast: false
       matrix:
         os:
-          - "ubuntu-22.04"
           - "ubuntu-latest"
         python:
           - "3.7"
           - "3.8"
           - "3.9"
+          - "3.10"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -44,3 +45,4 @@ jobs:
         run: pip install -e .
       - name: Run test
         run: xvfb-run python -m pytest -s -v -n auto -m lite
+        working-directory: tests

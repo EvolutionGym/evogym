@@ -12,6 +12,21 @@ evogym = "evogym"
 [tool.setuptools.package-data]
 "evogym.envs" = ["sim_files/*.json"]
 
+[tool.cibuildwheel]
+# Skip 32-bit builds, and musllinux builds
+skip = ["*-win32", "*-manylinux_i686", "*-musllinux*"]
+
+[tool.cibuildwheel.linux]
+
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-pypy_x86_64-image = "manylinux_2_28"
+before-all = "yum install -y libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel mesa-libGLU-devel"
+test-command = "echo 'installed'"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-musllinux*"
+before-all = "apk add xorg-dev libglu1-mesa-dev libglew-dev xvfb" # these package names may be wrong, untested
+
 [project]
 name = "evogym"
 version = "2.0.0"
@@ -22,7 +37,7 @@ description = "Evolution Gym: A benchmark for developing and evaluating soft rob
 readme = "README.md"
 license = {file = "LICENSE"}
 keywords = ["evolution", "gym", "evolution gym", "soft robotics", "benchmark", "co-design"]
-requires-python = ">=3.7"
+requires-python = ">=3.7, <3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -30,7 +45,7 @@ classifiers = [
 ]
 dependencies = [
     "gymnasium",
-    "numpy",
+    "numpy<2.0.0",
 ]
 
 [project.urls]
