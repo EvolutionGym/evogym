@@ -3,20 +3,20 @@
 ![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/wheels.yml/badge.svg)
 ![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/test.yml/badge.svg)
 
-Evolution Gym is a large-scale benchmark for co-optimizing the design and control of soft robots. It provides a lightweight soft-body simulator wrapped with a gym-like interface for developing learning algorithms. Evogym also includes a suite of 32 locomotion and manipulation tasks, detailed on our [website](https://evolutiongym.github.io/all-tasks). Task suite evaluations are described in our [NeurIPS 2021 paper](https://arxiv.org/pdf/2201.09863).
+Evolution Gym is a large-scale benchmark for co-optimizing the design and control of soft robots. It provides a lightweight soft-body simulator wrapped with a gym-like interface for developing learning algorithms. EvoGym also includes a suite of 32 locomotion and manipulation tasks, detailed on our [website](https://evolutiongym.github.io/all-tasks). Task suite evaluations are described in our [NeurIPS 2021 paper](https://arxiv.org/pdf/2201.09863).
 
 > [!NOTE]
-> Evogym has been recently updated! TLDR: requirements have been modernized, and the library is now pip-installable.
+> EvoGym has been recently updated! TLDR: requirements have been modernized (gym/gymnasium, numpy, etc.), and the library is now pip-installable.
 
 [//]: # (<img src="https://github.com/EvolutionGym/evogym/blob/main/images/teaser.gif" alt="teaser" width="800"/>)
 ![teaser](https://github.com/EvolutionGym/evogym/blob/main/images/teaser.gif)
 
 # Installation
 
-To use evogym, simply run:
+EvoGym supports python `3.7` to `3.10` on most operating systems:
 
 ```shell
-pip install --upgrade evogym
+pip install evogym --upgrade
 ```
 
 > [!CAUTION]
@@ -26,13 +26,19 @@ pip install --upgrade evogym
 > pip install -i https://test.pypi.org/simple/ evogym
 > ```
 
+On **Linux** install the following packages (or equivalent):
+
+```shell
+sudo apt-get install xorg-dev libglu1-mesa-dev
+```
+
 ## From Source
 
-If your platform is not supported, you may try building from source:
+If your platform is not supported, you may alternatively build from source:
 
 ### Requirements
 
-* Python 3.7+
+* Python 3
 * Linux, macOS, or Windows with [Visual Studios 2017](https://visualstudio.microsoft.com/vs/older-downloads/) build tools.
 * [CMake](https://cmake.org/download/)
 
@@ -48,7 +54,7 @@ On **Linux only**:
 sudo apt-get install xorg-dev libglu1-mesa-dev
 ```
 
-Finally, to install `evogym`, run the following command in the environment of your choice:
+Finally, to install `evogym`, run the following in the environment of your choice:
 
 ```shell
 pip install -e .
@@ -88,9 +94,19 @@ if __name__ == '__main__':
 
 This script creates a random `5x5` robot in the `Walking-v0` environment. The robot is taking random actions. A window should open with a visualization of the environment -- kill the process from the terminal to close it.
 
+## Known Issues
+
+### Linux and Conda
+
+Error message: `libGL error: MESA-LOADER: failed to open iris: /usr/lib/dri/iris_dri.so`
+
+Fix: `conda install -c conda-forge libstdcxx-ng`
+
+</details>
+
 # Usage
 
-
+In addition to the resources below, you can find API documentation on our [website](https://evolutiongym.github.io/documentation).
 
 ## Tutorials
 
@@ -120,16 +136,30 @@ Install the necessary python requirements:
 pip install -r requirements.txt
 ```
 
-## Docs
-
-You can find documentation on our [website](https://evolutiongym.github.io/documentation).
-
 ## Design Tool
 
 The Design Tool provides a gui for creating Evolution Gym environments. Please see [this repo](https://github.com/EvolutionGym/evogym-design-tool).
 
 [//]: # (<img src="images/teaser.gif" alt="teaser" width="800"/>)
 ![teaser](images/design-tool.gif)
+
+## Headless Mode
+
+EvoGym runs in headless mode by default, without initializing libraries used for rendering.
+These libraries are initialized on user requests. If using a server without rendering capabilities, ensure that:
+
+```python
+# Envs are created with render_mode=None (None by default)
+env = gym.make('Walker-v0', body=body, render_mode=None)
+```
+
+```python
+# If using the low-level api, do not call EvoViewer.render()
+world = EvoWorld.from_json(os.path.join('world_data', 'simple_environment.json'))
+sim = EvoSim(world)
+viewer = EvoViewer(sim)
+viewer.render('img') # <-- Rendering libraries are initialized; do not call this
+```
 
 # Dev
 

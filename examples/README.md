@@ -3,7 +3,7 @@
 This readme describes how to run several control optimization and co-design experiments and visualize the results. All scripts should be run from within the `examples` directory. Ensure that you have installed requirements: `pip install -r requirements.txt` and cloned the repo with submodules before running any of these scripts.
 
 > [!WARNING]
-> Many of these scripts have been modified in favor of improved usability. If you wish to exactly recreate the results from the original evogym paper, please see the [original release](https://github.com/EvolutionGym/evogym/releases/tag/1.0.0).
+> Many of these scripts have been modified in favor of improved usability. If you wish to exactly recreate the results from the original EvoGym paper, please see the [original release](https://github.com/EvolutionGym/evogym/releases/tag/1.0.0).
 
 ## PPO (control optimization)
 
@@ -39,7 +39,7 @@ python run_bo.py --eval-interval 10000 --total-timesteps 100000
 python run_cppn_neat.py --eval-interval 10000 --total-timesteps 100000
 ```
 
-Note that the default parameters are set for testing purposes, and should not produce successful robots. Feel free to increase the co-design/PPO parameters based on your compute availability.
+Note that the default parameters are set for testing purposes, and will not produce task-performant robots. Feel free to increase the co-design/PPO parameters based on your compute availability. You may also reference evaluation parameters from [Appendix D. of our paper](https://arxiv.org/pdf/2201.09863).
 
 ## Visualize
 
