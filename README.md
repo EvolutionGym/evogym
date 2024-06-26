@@ -1,7 +1,7 @@
 # Evolution Gym
 
-![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/wheels.yml/badge.svg)
-![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/test.yml/badge.svg)
+[![Build](https://github.com/EvolutionGym/evogym/actions/workflows/wheels.yml/badge.svg?branch=main)](https://github.com/EvolutionGym/evogym/actions/workflows/wheels.yml)
+[![Test](https://github.com/EvolutionGym/evogym/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/EvolutionGym/evogym/actions/workflows/test.yml)
 
 Evolution Gym is a large-scale benchmark for co-optimizing the design and control of soft robots. It provides a lightweight soft-body simulator wrapped with a gym-like interface for developing learning algorithms. EvoGym also includes a suite of 32 locomotion and manipulation tasks, detailed on our [website](https://evolutiongym.github.io/all-tasks). Task suite evaluations are described in our [NeurIPS 2021 paper](https://arxiv.org/pdf/2201.09863).
 
@@ -102,8 +102,6 @@ Error message: `libGL error: MESA-LOADER: failed to open iris: /usr/lib/dri/iris
 
 Fix: `conda install -c conda-forge libstdcxx-ng`
 
-</details>
-
 # Usage
 
 In addition to the resources below, you can find API documentation on our [website](https://evolutiongym.github.io/documentation).
@@ -140,13 +138,12 @@ pip install -r requirements.txt
 
 The Design Tool provides a gui for creating Evolution Gym environments. Please see [this repo](https://github.com/EvolutionGym/evogym-design-tool).
 
-[//]: # (<img src="images/teaser.gif" alt="teaser" width="800"/>)
-![teaser](images/design-tool.gif)
+[//]: # (<img src="https://github.com/EvolutionGym/evogym/blob/main/images/design-tool.gif" alt="teaser" width="800"/>)
+![teaser](https://github.com/EvolutionGym/evogym/blob/main/images/design-tool.gif)
 
 ## Headless Mode
 
-EvoGym runs in headless mode by default, without initializing libraries used for rendering.
-These libraries are initialized on user requests. If using a server without rendering capabilities, ensure that:
+EvoGym runs in headless mode by default, and avoids initializing rendering libraries until necessary. If using a server without rendering capabilities, ensure that:
 
 ```python
 # Envs are created with render_mode=None (None by default)
