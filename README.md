@@ -138,8 +138,8 @@ pip install -r requirements.txt
 
 The Design Tool provides a gui for creating Evolution Gym environments. Please see [this repo](https://github.com/EvolutionGym/evogym-design-tool).
 
-[//]: # (<img src="images/teaser.gif" alt="teaser" width="800"/>)
-![teaser](images/design-tool.gif)
+[//]: # (<img src="https://github.com/EvolutionGym/evogym/blob/main/images/design-tool.gif" alt="teaser" width="800"/>)
+![teaser](https://github.com/EvolutionGym/evogym/blob/main/images/design-tool.gif)
 
 ## Headless Mode
 
