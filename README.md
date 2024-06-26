@@ -143,8 +143,7 @@ The Design Tool provides a gui for creating Evolution Gym environments. Please s
 
 ## Headless Mode
 
-EvoGym runs in headless mode by default, without initializing libraries used for rendering.
-These libraries are initialized on user requests. If using a server without rendering capabilities, ensure that:
+EvoGym runs in headless mode by default, and avoids initializing rendering libraries until necessary. If using a server without rendering capabilities, ensure that:
 
 ```python
 # Envs are created with render_mode=None (None by default)
