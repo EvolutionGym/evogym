@@ -582,6 +582,11 @@ void Interface::hide_debug_window() {
 	debug_window_showing = false;
 }
 
+void Interface::close() {
+	glfwDestroyWindow(debug_window);
+	glfwTerminate();
+}
+
 vector<int> Interface::get_debug_window_pos() {
 
 	int xpos, ypos;

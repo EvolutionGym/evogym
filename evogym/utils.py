@@ -57,11 +57,12 @@ def get_uniform(x: int) -> np.ndarray:
     Return a uniform distribution of a given size.
 
     Args:
-        x (int): size of distribution.
+        x (int): size of distribution. Must be positive.
     
     Returns:
         np.ndarray: array representing the probability distribution.
     """
+    assert x > 0, f"Invalid size {x} for uniform distribution. Must be positive."
     return np.ones((x)) / x
 
 def draw(pd: np.ndarray) -> int:
@@ -69,14 +70,19 @@ def draw(pd: np.ndarray) -> int:
     Sample from a probability distribution.
 
     Args:
-        pd (np.ndarray): array representing the probability of sampling each element.
+        pd (np.ndarray): array representing the relative probability of sampling each element. Entries must be non-negative and sum to a non-zero value. Must contain at least one element.
     
     Returns:
         int: sampled index.
     """
     pd_copy = pd.copy()
-    if (type(pd_copy) != type(np.array([]))):
+    if not isinstance(pd_copy, np.ndarray):
         pd_copy = np.array(pd_copy)
+        
+    assert pd_copy.size > 0, f"Invalid size {pd_copy.size} for probability distribution. Must contain at least one element."
+    assert np.all(pd_copy >= 0), f"Invalid probability distribution {pd_copy}. Entries must be non-negative."
+    assert np.sum(pd_copy) > 0, f"Invalid probability distribution {pd_copy}. Entries must sum to a non-zero value."
+    
     pd_copy = pd_copy / pd_copy.sum()
 
     rand = random.uniform(0, 1)
@@ -88,17 +94,31 @@ def draw(pd: np.ndarray) -> int:
 
 def sample_robot(
     robot_shape: Tuple[int, int], 
-    pd: np.ndarray = None) -> Tuple[np.ndarray, np.ndarray]:
+    pd: Optional[np.ndarray] = None
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Return a randomly sampled robot of a particular size.
 
     Args:
         robot_shape (Tuple(int, int)): robot shape to sample `(h, w)`.
-        pd (np.ndarray): `(5,)` array representing the probability of sampling each robot voxel (empty, rigid, soft, h_act, v_act). Defaults to a custom distribution. (default = None)
+        pd (np.ndarray): `(5,)` array representing the relative probability of sampling each robot voxel (empty, rigid, soft, h_act, v_act). Defaults to a custom distribution. (default = None)
     
     Returns:
         Tuple[np.ndarray, np.ndarray]: randomly sampled (valid) robot voxel array and its associated connections array.
+        
+    Throws:
+        If it is not possible to sample a connected robot with at least one actuator.
     """
+    
+    h_act, v_act, empty = VOXEL_TYPES['H_ACT'], VOXEL_TYPES['V_ACT'], VOXEL_TYPES['EMPTY']
+    
+    if pd is not None:
+        assert pd.shape == (5,), f"Invalid probability distribution {pd}. Must have shape (5,)."
+        if pd[h_act] + pd[v_act] == 0:
+            raise ValueError(f"Invalid probability distribution {pd}. Must have a non-zero probability of sampling an actuator.")
+        if sum(pd) - pd[empty] == 0:
+            raise ValueError(f"Invalid probability distribution {pd}. Must have a non-zero probability of sampling a non-empty voxel.")
+    
     done = False
 
     while (not done):
@@ -219,7 +239,7 @@ def has_actuator(robot: np.ndarray) -> bool:
 
 def get_full_connectivity(robot: np.ndarray) -> np.ndarray:
     """
-    Returns a connections array given a connected robot structure. Assumes all adjacent voxels are connected.
+    Returns a connections array given a structure. Assumes all adjacent voxels are connected.
 
     Args:
         robot (np.ndarray): array specifing the voxel structure of the robot.

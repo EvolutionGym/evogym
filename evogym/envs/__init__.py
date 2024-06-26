@@ -10,7 +10,7 @@ from evogym.envs.change_shape import *
 from evogym.envs.traverse import *
 from evogym.envs.walk import *
 
-from gym.envs.registration import register
+from gymnasium.envs.registration import register
 
 ## SIMPLE ##
 register(

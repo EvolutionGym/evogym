@@ -1,11 +1,46 @@
 # Evolution Gym
 
-A large-scale benchmark for co-optimizing the design and control of soft robots. As seen in [Evolution Gym: A Large-Scale Benchmark for Evolving Soft Robots](https://evolutiongym.github.io/) (**NeurIPS 2021**).
+![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/wheels.yml/badge.svg)
+![example workflow](https://github.com/EvolutionGym/evogym/actions/workflows/test.yml/badge.svg)
 
-[//]: # (<img src="images/teaser.gif" alt="teaser" width="800"/>)
-![teaser](images/teaser.gif)
+Evolution Gym is a large-scale benchmark for co-optimizing the design and control of soft robots. It provides a lightweight soft-body simulator wrapped with a gym-like interface for developing learning algorithms. EvoGym also includes a suite of 32 locomotion and manipulation tasks, detailed on our [website](https://evolutiongym.github.io/all-tasks). Task suite evaluations are described in our [NeurIPS 2021 paper](https://arxiv.org/pdf/2201.09863).
+
+> [!NOTE]
+> EvoGym has been recently updated! TLDR: requirements have been modernized (gym/gymnasium, numpy, etc.), and the library is now pip-installable.
+
+[//]: # (<img src="https://github.com/EvolutionGym/evogym/blob/main/images/teaser.gif" alt="teaser" width="800"/>)
+![teaser](https://github.com/EvolutionGym/evogym/blob/main/images/teaser.gif)
 
 # Installation
+
+EvoGym supports python `3.7` to `3.10` on most operating systems:
+
+```shell
+pip install evogym --upgrade
+```
+
+> [!CAUTION]
+> This doesn't work yet -- coming soon! For now, you can install from test pypi:
+> ```shell
+> pip install "numpy<2.0.0" gymnasium
+> pip install -i https://test.pypi.org/simple/ evogym
+> ```
+
+On **Linux** install the following packages (or equivalent):
+
+```shell
+sudo apt-get install xorg-dev libglu1-mesa-dev
+```
+
+## From Source
+
+If your platform is not supported, you may alternatively build from source:
+
+### Requirements
+
+* Python 3
+* Linux, macOS, or Windows with [Visual Studios 2017](https://visualstudio.microsoft.com/vs/older-downloads/) build tools.
+* [CMake](https://cmake.org/download/)
 
 Clone the repo and submodules:
 
@@ -13,79 +48,149 @@ Clone the repo and submodules:
 git clone --recurse-submodules https://github.com/EvolutionGym/evogym.git
 ```
 
-### Requirements
-
-* Python 3.7/3.8
-* Linux, macOS, or Windows with [Visual Studios 2017](https://visualstudio.microsoft.com/vs/older-downloads/)
-* [OpenGL](https://www.opengl.org//)
-* [CMake](https://cmake.org/download/)
-* [PyTorch](http://pytorch.org/)
-
-<!--- (See [installation instructions](#opengl-installation-on-unix-based-systems) on Unix based systems) --->
-
 On **Linux only**:
 
 ```shell
 sudo apt-get install xorg-dev libglu1-mesa-dev
 ```
 
-Either install Python dependencies with conda:
+Finally, to install `evogym`, run the following in the environment of your choice:
 
 ```shell
-conda env create -f environment.yml
-conda activate evogym
+pip install -e .
 ```
 
-or with pip:
+## Test Installation
 
-```shell
-pip install -r requirements.txt
-```
-
-### Build and Install Package
-
-To build the C++ simulation, build all the submodules, and install `evogym` run the following command:
-
-```shell
-python setup.py install
-``` 
-
-### Test Installation
-
-cd to the `examples` folder and run the following script:
+If you have the repo cloned, `cd` to the `examples` folder and run the following script:
 
 ```shell
 python gym_test.py
 ```
 
+Alternatively, you can run the following snippet:
+
+```python
+import gymnasium as gym
+import evogym.envs
+from evogym import sample_robot
+
+
+if __name__ == '__main__':
+
+    body, connections = sample_robot((5,5))
+    env = gym.make('Walker-v0', body=body, render_mode='human')
+    env.reset()
+
+    while True:
+        action = env.action_space.sample()
+        ob, reward, terminated, truncated, info = env.step(action)
+
+        if terminated or truncated:
+            env.reset()
+
+    env.close()
+```
+
 This script creates a random `5x5` robot in the `Walking-v0` environment. The robot is taking random actions. A window should open with a visualization of the environment -- kill the process from the terminal to close it.
 
-<!--### OpenGL installation on Unix-based systems
+## Known Issues
 
-To install OpenGL via [homebrew](https://brew.sh/), run the following commands:
+### Linux and Conda
 
-```shell
-brew install glfw
-```
---->
+Error message: `libGL error: MESA-LOADER: failed to open iris: /usr/lib/dri/iris_dri.so`
+
+Fix: `conda install -c conda-forge libstdcxx-ng`
+
+</details>
 
 # Usage
 
-## Examples
-
-To see example usage as well as to run co-design and control optimization experiments in EvoGym, please see the `examples` folder and its `README`.
+In addition to the resources below, you can find API documentation on our [website](https://evolutiongym.github.io/documentation).
 
 ## Tutorials
 
-You can find tutorials for getting started with the codebase on our [website](https://evolutiongym.github.io/tutorials). Completed code from all tutorials is also available in the `tutorials` folder.
+You can find tutorials for getting started with the codebase on our [website](https://evolutiongym.github.io/tutorials). Completed code from all tutorials is also available in the `tutorials` folder, along with a `README`. Tutorials are included for:
+- Using the [evogym API](https://evolutiongym.github.io/tutorials/basic-api.html)
+- Making a [custom evogym environment](https://evolutiongym.github.io/tutorials/new-env.html)
+- Supported [rendering options](https://github.com/EvolutionGym/evogym/blob/main/tutorials/rendering_options.py)
 
-## Docs
+## Examples
 
-You can find documentation on our [website](https://evolutiongym.github.io/documentation).
+To run co-design and control optimization experiments in EvoGym, please see the `examples` folder and its `README`. Included are scripts for:
+- Running PPO
+- Running a Genetic Algorithm
+- Running Bayesian Optimization
+- Running CPPN-NEAT
+- Visualizing results
+- Saving results as gifs
+
+Make sure you clone the repo with submodules:
+
+```shell
+git clone --recurse-submodules https://github.com/EvolutionGym/evogym.git
+```
+
+Install the necessary python requirements:
+```shell
+pip install -r requirements.txt
+```
 
 ## Design Tool
 
-For instructions on how to use the Evolution Gym Design Tool, please see [this repo](https://github.com/EvolutionGym/evogym-design-tool).
+The Design Tool provides a gui for creating Evolution Gym environments. Please see [this repo](https://github.com/EvolutionGym/evogym-design-tool).
+
+[//]: # (<img src="images/teaser.gif" alt="teaser" width="800"/>)
+![teaser](images/design-tool.gif)
+
+## Headless Mode
+
+EvoGym runs in headless mode by default, without initializing libraries used for rendering.
+These libraries are initialized on user requests. If using a server without rendering capabilities, ensure that:
+
+```python
+# Envs are created with render_mode=None (None by default)
+env = gym.make('Walker-v0', body=body, render_mode=None)
+```
+
+```python
+# If using the low-level api, do not call EvoViewer.render()
+world = EvoWorld.from_json(os.path.join('world_data', 'simple_environment.json'))
+sim = EvoSim(world)
+viewer = EvoViewer(sim)
+viewer.render('img') # <-- Rendering libraries are initialized; do not call this
+```
+
+# Dev
+
+Install the repo with submodules:
+
+```shell
+git clone --recurse-submodules https://github.com/EvolutionGym/evogym.git
+```
+
+Install the necessary python requirements. You will additionally need to install the dev requirements:
+```shell
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+```
+
+## Run Tests
+
+From within the `tests` directory run the full test suite:
+
+```shell
+cd tests
+pytest -s -v -n auto
+```
+
+Or the lite test suite:
+
+
+```shell
+cd tests
+pytest -s -v -n auto -m lite
+```
 
 # Citation
 

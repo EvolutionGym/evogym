@@ -1,8 +1,8 @@
 from evogym.envs.base import EvoGymBase
-import gym
-from gym import error, spaces
-from gym import utils
-from gym.utils import seeding
+import gymnasium as gym
+from gymnasium import error, spaces
+from gymnasium import utils
+from gymnasium.utils import seeding
 
 from evogym import *
 from evogym.envs import BenchmarkBase
@@ -11,15 +11,22 @@ import random
 import math
 import numpy as np
 import os
+from typing import Dict, Any, Optional
 
 
 class PackageBase(BenchmarkBase):
     
-    def __init__(self, world):
-        super().__init__(world)
+    def __init__(
+        self,
+        world: EvoWorld,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
+
+        super().__init__(world=world, render_mode=render_mode, render_options=render_options)
         self.default_viewer.track_objects('robot', 'package')
 
-    def get_obs(self, robot_pos_final, robot_vel_final, package_pos_final, package_vel_final):
+    def get_obs(self, robot_pos_final, robot_vel_final, package_pos_final, package_vel_final) -> np.ndarray:
         
         robot_com_pos = np.mean(robot_pos_final, axis=1)
         robot_com_vel = np.mean(robot_vel_final, axis=1)
@@ -55,9 +62,9 @@ class PackageBase(BenchmarkBase):
     
         return reward
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         robot_pos_final = self.object_pos_at_time(self.get_time(), "robot")
@@ -71,26 +78,32 @@ class PackageBase(BenchmarkBase):
             self.get_relative_pos_obs("robot"),
         ))
 
-        return obs
+        return obs, {}
 
 
 class CarrySmallRect(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
         
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Carrier-v0.json'))
         self.world.add_from_array('robot', body, 1, 1, connections=connections)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=float)
 
         # threshhold height
         self.thresh_height = 3.0*self.VOXEL_SIZE
@@ -149,26 +162,32 @@ class CarrySmallRect(PackageBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class CarrySmallRectToTable(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Carrier-v1.json'))
         self.world.add_from_array('robot', body, 1, 4, connections=connections)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=float)
 
         # threshhold height
         self.thresh_height = 6.0*self.VOXEL_SIZE
@@ -225,26 +244,32 @@ class CarrySmallRectToTable(PackageBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class PushSmallRect(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Pusher-v0.json'))
         self.world.add_from_array('robot', body, 1, 1, connections=connections)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=float)
 
         # threshhold height
         self.thresh_height = 0.0*self.VOXEL_SIZE
@@ -285,26 +310,32 @@ class PushSmallRect(PackageBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class PushSmallRectOnOppositeSide(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Pusher-v1.json'))
         self.world.add_from_array('robot', body, 13, 1, connections=connections)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=float)
 
         # threshhold height
         self.thresh_height = 0.0*self.VOXEL_SIZE
@@ -345,26 +376,32 @@ class PushSmallRectOnOppositeSide(PackageBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class ThrowSmallRect(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Thrower-v0.json'))
         self.world.add_from_array('robot', body, 1, 1, connections=connections)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(6 + num_robot_points,), dtype=float)
 
         # threshhold height
         self.thresh_height = 0.0*self.VOXEL_SIZE
@@ -415,15 +452,24 @@ class ThrowSmallRect(PackageBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
 class CatchSmallRect(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         self.robot_body = body
         self.robot_connections = connections
+        
+        self.render_mode = render_mode
+        self.render_options = render_options
 
         self.random_init()
  
@@ -452,7 +498,7 @@ class CatchSmallRect(PackageBase):
         self.world.add_object(peg2)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=self.render_mode, render_options=self.render_options)
         
         self.default_viewer.track_objects('robot', 'package')
 
@@ -460,13 +506,13 @@ class CatchSmallRect(PackageBase):
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(7 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(7 + num_robot_points,), dtype=float)
 
         # threshhold height
         self.thresh_height = 5.0*self.VOXEL_SIZE
     
-    def get_obs_catch(self, robot_pos_final, package_pos_final):
+    def get_obs_catch(self, robot_pos_final, package_pos_final) -> np.ndarray:
         
         robot_com_pos = np.mean(robot_pos_final, axis=1)
         package_com_pos = np.mean(package_pos_final, axis=1)
@@ -525,12 +571,12 @@ class CatchSmallRect(PackageBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        EvoGymBase.reset(self)
+        EvoGymBase.reset(self, seed=seed, options=options)
         self.default_viewer.hide_debug_window()
         self.random_init()
 
@@ -558,25 +604,31 @@ class CatchSmallRect(PackageBase):
             self.get_relative_pos_obs("robot"),
         ))
 
-        return obs
+        return obs, {}
 
 class ToppleBeam(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'BeamToppler-v0.json'))
         self.world.add_from_array('robot', body, 1, 1, connections=connections)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(7 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(7 + num_robot_points,), dtype=float)
 
         # threshhold height
         self.thresh_height = 0.0*self.VOXEL_SIZE
@@ -651,12 +703,12 @@ class ToppleBeam(PackageBase):
             reward += 1.0
             done = True
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        EvoGymBase.reset(self)
+        EvoGymBase.reset(self, seed=seed, options=options)
 
         # observation
         robot_pos_final = self.object_pos_at_time(self.get_time(), "robot")
@@ -671,25 +723,31 @@ class ToppleBeam(PackageBase):
             self.get_relative_pos_obs("robot"),
         ))
 
-        return obs
+        return obs, {}
 
 class SlideBeam(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'BeamSlider-v0.json'))
         self.world.add_from_array('robot', body, 1, 1, connections=connections)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(7 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(7 + num_robot_points,), dtype=float)
 
         # threshhold height
         self.thresh_height = 0.0*self.VOXEL_SIZE
@@ -760,12 +818,12 @@ class SlideBeam(PackageBase):
             reward += 1.0
             done = True
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        EvoGymBase.reset(self)
+        EvoGymBase.reset(self, seed=seed, options=options)
 
         # observation
         robot_pos_final = self.object_pos_at_time(self.get_time(), "robot")
@@ -780,25 +838,31 @@ class SlideBeam(PackageBase):
             self.get_relative_pos_obs("robot"),
         ))
 
-        return obs
+        return obs, {}
 
 class LiftSmallRect(PackageBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Lifter-v0.json'))
         self.world.add_from_array('robot', body, 2, 3, connections=connections)
 
         # init sim
-        PackageBase.__init__(self, self.world)
+        PackageBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(7 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(7 + num_robot_points,), dtype=float)
 
     def get_reward_lift(self, robot_pos_init, robot_pos_final, package_pos_init, package_pos_final):
         
@@ -852,12 +916,12 @@ class LiftSmallRect(PackageBase):
             print("SIMULATION UNSTABLE... TERMINATING")
             reward -= 3.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
     
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        EvoGymBase.reset(self)
+        EvoGymBase.reset(self, seed=seed, options=options)
 
         # observation
         robot_pos_final = self.object_pos_at_time(self.get_time(), "robot")
@@ -872,5 +936,5 @@ class LiftSmallRect(PackageBase):
             self.get_relative_pos_obs("robot"),
         ))
 
-        return obs
+        return obs, {}
         

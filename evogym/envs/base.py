@@ -1,10 +1,10 @@
 
-import gym
-from gym import error, spaces
-from gym import utils
-from gym.utils import seeding
+import gymnasium as gym
+from gymnasium import error, spaces
+from gymnasium import utils
+from gymnasium.utils import seeding
 
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Any
 from evogym import *
 
 import random
@@ -19,20 +19,34 @@ class EvoGymBase(gym.Env):
 
     Args:
         world (EvoWorld): object specifying the voxel layout of the environment.
+        render_mode (Optional[str]): values of `screen` and `human` will automatically render to a debug window every `step()`. If set to `img` or `rgb_array`, `render()` will return an image array. No rendering by default (default = None)
+        render_options (Optional[Dict[str, Any]]): dictionary of rendering options. See EvoGymBase.render() for details (default = None)
     """
-    def __init__(self, world: EvoWorld) -> None:
+    
+    metadata = {'render_modes': ['screen', 'human', 'img', 'rgb_array']}
+    
+    def __init__(
+        self,
+        world: EvoWorld,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ) -> None:
 
         # sim
-        self._sim = EvoSim(self.world)
+        self._sim = EvoSim(world)
         self._default_viewer = EvoViewer(self._sim)
+        
+        # render
+        self._render_mode = render_mode
+        self._render_options = render_options
 
     def step(self, action: Dict[str, np.ndarray]) -> bool:
         """
-        Step the environment by running physcis computations.
+        Step the environment by running physics computations.
 
         Args:
             action (Dict[str, np.ndarray]): dictionary mapping robot names to actions. Actions are `(n,)` arrays, where `n` is the number of actuators in the target robot.
-        
+            
         Returns:
             bool: whether or not the simulation has reached an unstable state and cannot be recovered (`True` = unstable).
         """
@@ -42,10 +56,13 @@ class EvoGymBase(gym.Env):
             a[abs(a) < 1e-8] = 0
             self._sim.set_action(robot_name, a)
         done = self._sim.step()
+        
+        if self._render_mode == 'human' or self._render_mode == 'screen':
+            self.render()
 
         return done
 
-    def reset(self,) -> None:
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> None:
         """
         Reset the simulation to the initial state.
         """
@@ -71,34 +88,40 @@ class EvoGymBase(gym.Env):
         """
         return self._default_viewer
     
-    def render(self,
-               mode: str ='screen',
-               verbose: bool = False,
-               hide_background: bool = False,
-               hide_grid: bool = False,
-               hide_edges: bool = False,
-               hide_voxels: bool = False) -> Optional[np.ndarray]:
+    def render(
+        self,
+    ) -> Optional[np.ndarray]:
         """
-        Render the simulation.
-
-        Args:
-            mode (str): values of 'screen' and 'human' will render to a debug window. If set to 'img' will return an image array.
-            verbose (bool): whether or not to print the rendering speed (rps) every second.
-            hide_background (bool): whether or not to render the cream-colored background. If shut off background will be white.
-            hide_grid (bool): whether or not to render the grid.
-            hide_edges (bool): whether or not to render edges around all objects.
-            hide_voxels (bool): whether or not to render voxels.
-
+        Render the simulation according to the `render_mode` and `render_options` specified at initialization.
+        The following rendering options are available as key-value pairs in the `render_options` dictionary:
+        - `verbose` (bool): whether or not to print the rendering speed (rps) every second. (default = False)
+        - `hide_background` (bool): whether or not to render the cream-colored background. If shut off background will be white. (default = False)
+        - `hide_grid` (bool): whether or not to render the grid. (default = False)
+        - `hide_edges` (bool): whether or not to render edges around all objects. (default = False)
+        - `hide_voxels` (bool): whether or not to render voxels. (default = False)
+        
         Returns:
-            Optional[np.ndarray]: if `mode` is set to `img`, will return an image array.
+            Optional[np.ndarray]: if `mode` is set to `img` or `rgb_array`, will return an image array. Otherwise, will return `None`.
         """
+        mode, render_options = self._render_mode, {} if self._render_options is None else self._render_options
+        if mode is None:
+            return None
+        
+        verbose = render_options.get('verbose', False)
+        hide_background = render_options.get('hide_background', False)
+        hide_grid = render_options.get('hide_grid', False)
+        hide_edges = render_options.get('hide_edges', False)
+        hide_voxels = render_options.get('hide_voxels', False)
+        
         return self.default_viewer.render(mode, verbose, hide_background, hide_grid, hide_edges, hide_voxels)
 
     def close(self) -> None:
         """
         Close the simulation.
         """
-        self.default_viewer.hide_debug_window() 
+        self.default_viewer.close()
+        del self._default_viewer
+        del self._sim
 
     def get_actuator_indices(self, robot_name: str) -> np.ndarray:
         """
@@ -360,19 +383,15 @@ class BenchmarkBase(EvoGymBase):
     DATA_PATH = pkg_resources.resource_filename('evogym.envs', os.path.join('sim_files'))
     VOXEL_SIZE = 0.1
 
-    def __init__(self, world):
+    def __init__(
+        self,
+        world: EvoWorld,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
-        EvoGymBase.__init__(self, world)
+        EvoGymBase.__init__(self, world=world, render_mode=render_mode, render_options=render_options)
         self.default_viewer.track_objects('robot')
-
-    def step(self, action):
-
-        action_copy = {}
-
-        for robot_name, a in action.items():
-            action_copy[robot_name] = a + 1
-
-        return super().step(action_copy)
     
     def pos_at_time(self, time):
         return super().pos_at_time(time)*self.VOXEL_SIZE

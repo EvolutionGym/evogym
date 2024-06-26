@@ -1,6 +1,6 @@
-name: Testing
+name: Test
 
-on: [push, pull_request]
+on: [push]
 
 permissions:
   contents: read
@@ -10,16 +10,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build_and_test:
     strategy:
+      fail-fast: false
       matrix:
         os:
-          - "ubuntu-22.04"
           - "ubuntu-latest"
         python:
           - "3.7"
           - "3.8"
           - "3.9"
+          - "3.10"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -34,13 +35,14 @@ jobs:
       - name: Install deb dependencies
         run: sudo apt-get install -y xorg-dev libglu1-mesa-dev libglew-dev xvfb
       - name: Install python dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-dev.txt
       - name: Cache python wheel packages
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: wheel-cache-${{ hashFiles('requirements.txt') }}
+          key: wheel-cache-${{ hashFiles('requirements-dev.txt') }}
       - name: Install evolution gym
         run: pip install -e .
       - name: Run test
-        run: xvfb-run python -m unittest tests/test_render.py
+        run: xvfb-run python -m pytest -s -v -n auto -m lite
+        working-directory: tests

@@ -1,9 +1,8 @@
-from distutils.command.config import config
 import os
 from re import X
 import shutil
-import random
 import numpy as np
+import argparse
 
 from GPyOpt.core.task.space import Design_space
 from GPyOpt.models import GPModel
@@ -13,17 +12,9 @@ from GPyOpt.acquisitions import AcquisitionEI
 from GPyOpt.core.evaluators import ThompsonBatch
 from .optimizer import Objective, Optimization
 
-import sys
-curr_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.join(curr_dir, '..')
-external_dir = os.path.join(root_dir, 'externals')
-sys.path.insert(0, root_dir)
-sys.path.insert(1, os.path.join(external_dir, 'pytorch_a2c_ppo_acktr_gail'))
-
+from ppo.run import run_ppo
 import evogym.envs
 from evogym import is_connected, has_actuator, get_full_connectivity
-from utils.algo_utils import TerminationCondition
-from ppo import run_ppo
 
 def get_robot_from_genome(genome, config):
     '''
@@ -36,6 +27,8 @@ def get_robot_from_genome(genome, config):
 
 def eval_genome_cost(genome, config, genome_id, generation):
     robot = get_robot_from_genome(genome, config)
+    args, env_name = config['args'], config['env_name']
+    
     if not (is_connected(robot) and has_actuator(robot)):
         return 10
     else:
@@ -45,9 +38,7 @@ def eval_genome_cost(genome, config, genome_id, generation):
         save_path_controller = os.path.join(save_path_generation, 'controller')
         np.savez(save_path_structure, robot, connectivity)
         fitness = run_ppo(
-            structure=(robot, connectivity),
-            termination_condition=TerminationCondition(config['train_iters']),
-            saving_convention=(save_path_controller, genome_id),
+            args, robot, env_name, save_path_controller, f'{genome_id}', connectivity
         )
         cost = -fitness
         return cost
@@ -61,20 +52,23 @@ def eval_genome_constraint(genomes, config):
     return np.array(all_violation)
 
 def run_bo(
-        experiment_name,
-        structure_shape,
-        pop_size,
-        max_evaluations,
-        train_iters,
-        num_cores,
-    ):
-
-    save_path = os.path.join(root_dir, 'saved_data', experiment_name)
+    args: argparse.Namespace,
+):
+    exp_name, env_name, pop_size, structure_shape, max_evaluations, num_cores = (
+        args.exp_name,
+        args.env_name,
+        args.pop_size,
+        args.structure_shape,
+        args.max_evaluations,
+        args.num_cores,
+    )
+    
+    save_path = os.path.join('saved_data', exp_name)
 
     try:
         os.makedirs(save_path)
     except:
-        print(f'THIS EXPERIMENT ({experiment_name}) ALREADY EXISTS')
+        print(f'THIS EXPERIMENT ({exp_name}) ALREADY EXISTS')
         print('Override? (y/n): ', end='')
         ans = input()
         if ans.lower() == 'y':
@@ -88,13 +82,13 @@ def run_bo(
     with open(save_path_metadata, 'w') as f:
         f.write(f'POP_SIZE: {pop_size}\n' \
             f'STRUCTURE_SHAPE: {structure_shape[0]} {structure_shape[1]}\n' \
-            f'MAX_EVALUATIONS: {max_evaluations}\n' \
-            f'TRAIN_ITERS: {train_iters}\n')
+            f'MAX_EVALUATIONS: {max_evaluations}\n')
 
     config = {
         'structure_shape': structure_shape,
-        'train_iters': train_iters,
         'save_path': save_path,
+        'args': args, # args for run_ppo
+        'env_name': env_name,
     }
     
     def constraint_func(genome): 

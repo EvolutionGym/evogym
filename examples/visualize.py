@@ -1,22 +1,42 @@
-import os, sys
-root_dir = os.path.dirname(os.path.abspath(__file__))
-external_dir = os.path.join(root_dir, 'externals')
-sys.path.insert(0, root_dir)
-sys.path.insert(1, os.path.join(external_dir, 'PyTorch-NEAT'))
-sys.path.insert(1, os.path.join(external_dir, 'pytorch_a2c_ppo_acktr_gail'))
+import os
 
 import json
 import argparse
-import sys
 import numpy as np
-import torch
-import gym
+from typing import Optional
 
 from utils.algo_utils import *
-from ppo.envs import make_vec_envs
-from ppo.utils import get_vec_normalize
-
+from stable_baselines3 import PPO
+from stable_baselines3.common.env_util import make_vec_env
 import evogym.envs
+
+def rollout(
+    env_name: str,
+    n_iters: int,
+    model: PPO,
+    body: np.ndarray,
+    connections: Optional[np.ndarray] = None,
+    seed: int = 42,
+):
+    # Parallel environments
+    vec_env = make_vec_env(env_name, n_envs=1, seed=seed, env_kwargs={
+        'body': body,
+        'connections': connections,
+        "render_mode": "human",
+    })
+    
+    # Rollout
+    reward_sum = 0
+    obs = vec_env.reset()
+    count = 0
+    while count < n_iters:
+        action, _states = model.predict(obs, deterministic=True)
+        obs, reward, done, info = vec_env.step(action)
+        reward_sum += reward[0]
+        count += 1
+        if done:
+            print(f'\nTotal reward: {reward_sum:.5f}\n')
+    vec_env.close()
 
 def visualize_codesign(args, exp_name):
     global EXPERIMENT_PARENT_DIR
@@ -98,63 +118,10 @@ def visualize_codesign(args, exp_name):
 
             if num_iters == 0:
                 continue
-
-            env = make_vec_envs(
-                args.env_name,
-                structure,
-                1000,
-                1,
-                None,
-                None,
-                device='cpu',
-                allow_early_resets=False)
-
-            # We need to use the same statistics for normalization as used in training
-            try:
-                save_path_controller = os.path.join(EXPERIMENT_PARENT_DIR, exp_name, "generation_" + str(gen_number), "controller", "robot_" + str(robot_index) + "_controller" + ".pt")
-                actor_critic, obs_rms = \
-                            torch.load(save_path_controller,
-                                        map_location='cpu')
-            except:
-                print(f'\nCould not load robot controller data at {save_path_controller}.\n')
-                continue
-
-            vec_norm = get_vec_normalize(env)
-            if vec_norm is not None:
-                vec_norm.eval()
-                vec_norm.obs_rms = obs_rms
-
-            recurrent_hidden_states = torch.zeros(1,
-                                                actor_critic.recurrent_hidden_state_size)
-            masks = torch.zeros(1, 1)
-
-            obs = env.reset()
-            env.render('screen')
-
-            total_steps = 0
-            reward_sum = 0
-            while total_steps < num_iters:
-                with torch.no_grad():
-                    value, action, _, recurrent_hidden_states = actor_critic.act(
-                        obs, recurrent_hidden_states, masks, deterministic=args.det)
-
-
-                # Obser reward and next obs
-                obs, reward, done, _ = env.step(action)
-                masks.fill_(0.0 if (done) else 1.0)
-                reward_sum += reward
-                
-                if done == True:
-                    env.reset()
-                    reward_sum = float(reward_sum.numpy().flatten()[0])
-                    print(f'\ntotal reward: {round(reward_sum, 5)}\n')
-                    reward_sum = 0
-
-                env.render('screen')
-
-                total_steps += 1
             
-            env.venv.close()
+            save_path_controller = os.path.join(EXPERIMENT_PARENT_DIR, exp_name, "generation_" + str(gen_number), "controller", f'{robot_index}.zip')
+            model = PPO.load(save_path_controller)
+            rollout(args.env_name, num_iters, model, structure[0], structure[1])
 
 def visualize_group_ppo(args, exp_name):
 
@@ -218,65 +185,45 @@ def visualize_group_ppo(args, exp_name):
         for key, value in structure_data.items():
             structure.append(value)
         structure = tuple(structure)
+        
+        save_path_controller = os.path.join(exp_dir, job, "controller", f"{robot}_{env_name}.zip")
+        model = PPO.load(save_path_controller)
+        rollout(env_name, num_iters, model, structure[0], structure[1])
+        
+def visualize_ppo(args, exp_name):
 
-        env = make_vec_envs(
-            env_name,
-            structure,
-            1000,
-            1,
-            None,
-            None,
-            device='cpu',
-            allow_early_resets=False)
+    exp_dir = os.path.join(EXPERIMENT_PARENT_DIR, exp_name)
+    out_file = os.path.join(exp_dir, 'ppo_result.json')
+    out = {}
+    with open(out_file, 'r') as f:
+        out = json.load(f)
+        
+    reward = out['best_reward']
+    env_name = out['env_name']
+    
+    print(f'\nEnvironment: {env_name}\nReward: {reward}')
 
-        # We need to use the same statistics for normalization as used in training
-        try:
-            save_path_controller = os.path.join(exp_dir, job, "controller", f"robot_{robot}_{env_name}_controller.pt")
-            actor_critic, obs_rms = \
-                        torch.load(save_path_controller,
-                                    map_location='cpu')
-        except:
-            print(f'\nCould not load robot controller data at {save_path_controller}.\n')
+    while True:
+        print()
+        print("Enter num iters: ", end="")
+        num_iters = int(input())
+        print()
+
+        if num_iters == 0:
             continue
 
-        vec_norm = get_vec_normalize(env)
-        if vec_norm is not None:
-            vec_norm.eval()
-            vec_norm.obs_rms = obs_rms
-
-        recurrent_hidden_states = torch.zeros(1,
-                                            actor_critic.recurrent_hidden_state_size)
-        masks = torch.zeros(1, 1)
-
-        obs = env.reset()
-        env.render('screen')
-
-        total_steps = 0
-        reward_sum = 0
-        while total_steps < num_iters:
-            with torch.no_grad():
-                value, action, _, recurrent_hidden_states = actor_critic.act(
-                    obs, recurrent_hidden_states, masks, deterministic=args.det)
-
-
-            # Obser reward and next obs
-            obs, reward, done, _ = env.step(action)
-            masks.fill_(0.0 if (done) else 1.0)
-            reward_sum += reward
-
-            if done == True:
-                env.reset()
-                reward_sum = float(reward_sum.numpy().flatten()[0])
-                print(f'\ntotal reward: {round(reward_sum, 5)}\n')
-                reward_sum = 0
-
-            env.render('screen')
-
-            total_steps += 1
+        save_path_structure = os.path.join(exp_dir, "structure", f"{env_name}.npz")
+        structure_data = np.load(save_path_structure)
+        structure = []
+        for key, value in structure_data.items():
+            structure.append(value)
+        structure = tuple(structure)
         
-        env.venv.close()
+        save_path_controller = os.path.join(exp_dir, "controller", f"{env_name}.zip")
+        model = PPO.load(save_path_controller)
+        rollout(env_name, num_iters, model, structure[0], structure[1])
 
-EXPERIMENT_PARENT_DIR = os.path.join(root_dir, 'saved_data')
+EXPERIMENT_PARENT_DIR = os.path.join('saved_data')
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='RL')
@@ -301,9 +248,10 @@ if __name__ == "__main__":
         exp_name = input()
 
     files_in_exp_dir = os.listdir(os.path.join(EXPERIMENT_PARENT_DIR, exp_name))
-    # group ppo experiment
-    if 'output.json' in files_in_exp_dir:
+    
+    if 'output.json' in files_in_exp_dir: # group ppo experiment
         visualize_group_ppo(args, exp_name)
-    # codesign experiment
-    else:
+    elif 'ppo_result.json' in files_in_exp_dir: # ppo experiment
+        visualize_ppo(args, exp_name)
+    else: # codesign experiment
         visualize_codesign(args, exp_name)

@@ -1,7 +1,8 @@
-import gym
-from gym import error, spaces
-from gym import utils
-from gym.utils import seeding
+import gymnasium as gym
+from gymnasium import error, spaces
+from gymnasium import utils
+from gymnasium.utils import seeding
+from typing import Optional, Dict, Any
 
 from evogym import *
 from evogym.envs import BenchmarkBase
@@ -13,21 +14,27 @@ import os
 
 class WalkingFlat(BenchmarkBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'Walker-v0.json'))
         self.world.add_from_array('robot', body, 1, 1, connections=connections)
 
         # init sim
-        BenchmarkBase.__init__(self, self.world)
+        BenchmarkBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -61,12 +68,12 @@ class WalkingFlat(BenchmarkBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         obs = np.concatenate((
@@ -74,25 +81,31 @@ class WalkingFlat(BenchmarkBase):
             self.get_relative_pos_obs("robot"),
             ))
 
-        return obs
+        return obs, {}
 
 class SoftBridge(BenchmarkBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'BridgeWalker-v0.json'))
         self.world.add_from_array('robot', body, 2, 5, connections=connections)
 
         # init sim
-        BenchmarkBase.__init__(self, self.world)
+        BenchmarkBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + 1 + num_robot_points,), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + 1 + num_robot_points,), dtype=float)
 
     def step(self, action):
 
@@ -127,12 +140,12 @@ class SoftBridge(BenchmarkBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         obs = np.concatenate((
@@ -141,26 +154,32 @@ class SoftBridge(BenchmarkBase):
             self.get_relative_pos_obs("robot"),
             ))
 
-        return obs
+        return obs, {}
 
 class Duck(BenchmarkBase):
 
-    def __init__(self, body, connections=None):
+    def __init__(
+        self,
+        body: np.ndarray,
+        connections: Optional[np.ndarray] = None,
+        render_mode: Optional[str] = None,
+        render_options: Optional[Dict[str, Any]] = None,
+    ):
 
         # make world
         self.world = EvoWorld.from_json(os.path.join(self.DATA_PATH, 'CaveCrawler-v0.json'))
         self.world.add_from_array('robot', body, 1, 2, connections=connections)
 
         # init sim
-        BenchmarkBase.__init__(self, self.world)
+        BenchmarkBase.__init__(self, world=self.world, render_mode=render_mode, render_options=render_options)
 
         # set action space and observation space
         num_actuators = self.get_actuator_indices('robot').size
         num_robot_points = self.object_pos_at_time(self.get_time(), "robot").size
         self.sight_dist = 5
 
-        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=np.float)
-        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points + 2*(self.sight_dist*2 +1),), dtype=np.float)
+        self.action_space = spaces.Box(low= 0.6, high=1.6, shape=(num_actuators,), dtype=float)
+        self.observation_space = spaces.Box(low=-100.0, high=100.0, shape=(2 + num_robot_points + 2*(self.sight_dist*2 +1),), dtype=float)
 
     def step(self, action):
 
@@ -196,12 +215,12 @@ class Duck(BenchmarkBase):
             done = True
             reward += 1.0
 
-        # observation, reward, has simulation met termination conditions, debugging info
-        return obs, reward, done, {}
+        # observation, reward, has simulation met termination conditions, truncated, debugging info
+        return obs, reward, done, False, {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[np.ndarray, Dict[str, Any]]:
         
-        super().reset()
+        super().reset(seed=seed, options=options)
 
         # observation
         obs = np.concatenate((
@@ -211,4 +230,4 @@ class Duck(BenchmarkBase):
             self.get_ceil_obs("robot", ["terrain"], self.sight_dist),
             ))
 
-        return obs
+        return obs, {}

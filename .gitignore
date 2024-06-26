@@ -22,3 +22,4 @@ build_scripts
 .DS_Store
 exported/
 req_ns.txt
+backup/

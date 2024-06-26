@@ -1,93 +1,45 @@
 # Examples
 
-This readme describes how to run several control optimization and co-design experiments and visualize the results.
+This readme describes how to run several control optimization and co-design experiments and visualize the results. All scripts should be run from within the `examples` directory. Ensure that you have installed requirements: `pip install -r requirements.txt` and cloned the repo with submodules before running any of these scripts.
+
+> [!WARNING]
+> Many of these scripts have been modified in favor of improved usability. If you wish to exactly recreate the results from the original EvoGym paper, please see the [original release](https://github.com/EvolutionGym/evogym/releases/tag/1.0.0).
 
 ## PPO (control optimization)
 
-To set the parameters of group ppo, you can edit `run_group_ppo.py` and change the following:
-
-* `experiment_name` = all experiment files are saved to `saved_data/experiment_name`
-
-Create `SimJob`s to specify which robots to train and in which environments to train them. `SimJob`s are parameterized by the following:
-
-* `name` = all job files are saved to `saved_data/experiment_name/name`
-* `robots` = array of robot names specifying which robots to train. Robot files must be of type `.json` (created using the EvoGym Design Tool) or `.npz` (saved from another experiment) and must be located in `examples/world_data` 
-* `envs` = array of environment names in which to train robots
-* `train_iters` = number of iterations of ppo to train each robot's controller
-
-Each robot in `robots` will be trained in each environment in `envs` for `train_iters` iterations of ppo.
-
-From within `example`, you can run group ppo with the following command:
+The script is set up to train a robot's policy in the `Walker-v0` environment:
 
 ```shell
-python run_group_ppo.py --algo ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 4 --num-steps 128 --num-mini-batch 4 --log-interval 100 --use-linear-lr-decay --entropy-coef 0.01 --eval-interval 50
+python run_ppo.py --n-envs 4 --n-eval-envs 4 --n-evals 4 --eval-interval 10000 --total-timesteps 100000
 ```
 
-All ppo hyperparameters are specified through command line arguments. For more details please see [this repo](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr-gail).
+Results saved to `saved_data/test_ppo`. See `python run_ppo.py --help` to see how training can be customized. We recommend setting `total-timesteps > 1e6` for a serious training run.
 
+## Co-Design
 
-## Genetic Algorithm (co-design)
+All three co-design algorithms: the genetic algorithm, bayesian optimization, and CPPN-NEAT have the same core parameters:
 
-To set the parameters of the genetic algorithm, you can edit `run_ga.py` and change the following:
+* `exp-name` = all experiment files are saved to `saved_data/exp_name`
+* `env-name` = environment on which to run co-design
+* `pop-size` = the algorithm evolves robots in populations of this size
+* `structure-shape` = each robot is represented by `(m,n)` matrix of voxels
+* `max-evaluations` = maximum number of unique robots to evaluate
+* `num-cores` = number of robots to train in parallel. Note: the total number of processes created will be `num-cores * n-envs` (as specified below in the command line)
 
-* `seed` = seed to control randomness
-* `pop_size` = the algorithm evolves robots in populations of this size
-* `structure_shape` = each robot is represented by `(m,n)` matrix of voxels 
-* `experiment_name` = all experiment files are saved to `saved_data/experiment_name`
-* `max_evaluations` = maximum number of unique robots to evaluate
-* `train_iters` = number of iterations of ppo to train each robot's controller
-* `num_cores` = number of robots to train in parallel. Note: the total number of processes created will be `num_cores * num_processes` (as specified below in the command line)
+See all options via 
+`python run_ga.py --help`
+`python run_bo.py --help`
+`python run_cppn_neat.py --help`
 
-From within `example`, you can run the genetic algorithm with the following command:
+From within `example`, you can run the co-design algorithms as follows:
 
 ```shell
-python run_ga.py --env-name "Walker-v0" --algo ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 4 --num-steps 128 --num-mini-batch 4 --log-interval 100 --use-linear-lr-decay --entropy-coef 0.01 --eval-interval 50
+python run_ga.py --eval-interval 10000 --total-timesteps 100000
+python run_bo.py --eval-interval 10000 --total-timesteps 100000
+python run_cppn_neat.py --eval-interval 10000 --total-timesteps 100000
 ```
 
-The environment name as well as all ppo hyperparameters are specified through command line arguments. For more details please see [this repo](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr-gail).
-
-
-## Bayesian Optimization (co-design)
-
-To set the parameters of bayesian optimization, you can edit `run_bo.py` and change the following:
-
-* `seed` = seed to control randomness
-* `pop_size` = the algorithm evolves robots in populations of this size
-* `structure_shape` = each robot is represented by `(m,n)` matrix of voxels 
-* `experiment_name` = all experiment files are saved to `saved_data/experiment_name`
-* `max_evaluations` = maximum number of unique robots to evaluate. Should be a multiple of `pop_size`
-* `train_iters` = number of iterations of ppo to train each robot's controller
-* `num_cores` = number of robots to train in parallel. Note: the total number of processes created will be `num_cores * num_processes` (as specified below in the command line)
-
-From within `example`, you can run bayesian optimization with the following command:
-
-```shell
-python run_bo.py --env-name "Walker-v0" --algo ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 4 --num-steps 128 --num-mini-batch 4 --log-interval 100 --use-linear-lr-decay --entropy-coef 0.01 --eval-interval 50
-```
-
-The environment name as well as all ppo hyperparameters are specified through command line arguments. For more details please see [this repo](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr-gail).
-
-
-## CPPN-NEAT (co-design)
-
-To set the parameters of cppn-neat, you can edit `run_cppn_neat.py` and change the following:
-
-* `seed` = seed to control randomness
-* `pop_size` = the algorithm evolves robots in populations of this size
-* `structure_shape` = each robot is represented by `(m,n)` matrix of voxels 
-* `experiment_name` = all experiment files are saved to `saved_data/experiment_name`
-* `max_evaluations` = maximum number of unique robots to evaluate. Should be a multiple of `pop_size`
-* `train_iters` = number of iterations of ppo to train each robot's controller
-* `num_cores` = number of robots to train in parallel. Note: the total number of processes created will be `num_cores * num_processes` (as specified below in the command line)
-
-From within `example`, you can run cppn-neat with the following command:
-
-```shell
-python run_cppn_neat.py --env-name "Walker-v0" --algo ppo --use-gae --lr 2.5e-4 --clip-param 0.1 --value-loss-coef 0.5 --num-processes 4 --num-steps 128 --num-mini-batch 4 --log-interval 100 --use-linear-lr-decay --entropy-coef 0.01 --eval-interval 50
-```
-
-The environment name as well as all ppo hyperparameters are specified through command line arguments. For more details please see [this repo](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr-gail).
-
+Note that the default parameters are set for testing purposes, and will not produce task-performant robots. Feel free to increase the co-design/PPO parameters based on your compute availability. You may also reference evaluation parameters from [Appendix D. of our paper](https://arxiv.org/pdf/2201.09863).
 
 ## Visualize
 
@@ -99,14 +51,11 @@ python visualize.py --env-name "Walker-v0"
 
 Use the appropriate environment name and follow the on-screen instructions.
 
-To visualize the results of a group ppo experiment you can use the same command -- the environment name is no longer necessary.
-
 ## Make Gifs
 
-To set the parameters of the gif generating script, you can edit `make_gifs.py` and change the following:
+This script generates gifs from co-design experiments. To set the parameters of the gif generating script, you can edit `make_gifs.py` and change the following:
 
 * `GIF_RESOLUTION` = resolution of produced gifs
-* `NUM_PROC` = number of gifs to produce in parallel
 * `name` = all files are saved to `saved_data/all_media/name`
 * `experiment_names`, `env_names` = arrays of experiments their corresponding environments to generate gifs for
 * `load_dir` = directory where experiments are stored
