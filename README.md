@@ -8,8 +8,8 @@ Evolution Gym is a large-scale benchmark for co-optimizing the design and contro
 > [!NOTE]
 > EvoGym has been recently updated! TLDR: requirements have been modernized (gym/gymnasium, numpy, etc.), and the library is now pip-installable.
 
-[//]: # (<img src="https://github.com/EvolutionGym/evogym/blob/main/images/teaser.gif" alt="teaser" width="800"/>)
-![teaser](https://github.com/EvolutionGym/evogym/blob/main/images/teaser.gif)
+[//]: # (<img src="https://github.com/EvolutionGym/evogym/raw/main/images/teaser.gif" alt="teaser" width="800"/>)
+![teaser](https://github.com/EvolutionGym/evogym/raw/main/images/teaser.gif)
 
 # Installation
 
@@ -138,8 +138,8 @@ pip install -r requirements.txt
 
 The Design Tool provides a gui for creating Evolution Gym environments. Please see [this repo](https://github.com/EvolutionGym/evogym-design-tool).
 
-[//]: # (<img src="https://github.com/EvolutionGym/evogym/blob/main/images/design-tool.gif" alt="teaser" width="800"/>)
-![teaser](https://github.com/EvolutionGym/evogym/blob/main/images/design-tool.gif)
+[//]: # (<img src="https://github.com/EvolutionGym/evogym/raw/main/images/design-tool.gif" alt="design-tool" width="800"/>)
+![design-tool](https://github.com/EvolutionGym/evogym/raw/main/images/design-tool.gif)
 
 ## Headless Mode
 
