@@ -19,12 +19,12 @@ EvoGym supports python `3.7` to `3.10` on most operating systems:
 pip install evogym --upgrade
 ```
 
-> [!CAUTION]
+<!-- > [!CAUTION]
 > This doesn't work yet -- coming soon! For now, you can install from test pypi:
 > ```shell
 > pip install "numpy<2.0.0" gymnasium
 > pip install -i https://test.pypi.org/simple/ evogym
-> ```
+> ``` -->
 
 On **Linux** install the following packages (or equivalent):
 
