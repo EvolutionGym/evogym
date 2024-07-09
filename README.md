@@ -8,8 +8,8 @@ Evolution Gym is a large-scale benchmark for co-optimizing the design and contro
 > [!NOTE]
 > EvoGym has been recently updated! TLDR: requirements have been modernized (gym/gymnasium, numpy, etc.), and the library is now pip-installable.
 
-[//]: # (<img src="https://github.com/EvolutionGym/evogym/raw/main/images/teaser.gif" alt="teaser" width="800"/>)
-![teaser](https://github.com/EvolutionGym/evogym/raw/main/images/teaser.gif)
+[//]: # (<img src="https://github.com/EvolutionGym/evogym/raw/main/images/teaser-low-res.gif" alt="teaser" width="800"/>)
+![teaser](https://github.com/EvolutionGym/evogym/raw/main/images/teaser-low-res.gif)
 
 # Installation
 
