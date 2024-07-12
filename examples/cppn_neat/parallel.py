@@ -3,6 +3,7 @@ Runs evaluation functions in parallel subprocesses
 in order to evaluate multiple genomes at once.
 """
 import multiprocessing as mp
+import multiprocessing.pool
 
 class NoDaemonProcess(mp.Process):
     # make 'daemon' attribute always return False
