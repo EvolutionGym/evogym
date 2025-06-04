@@ -5,8 +5,12 @@
 
 Evolution Gym is a large-scale benchmark for co-optimizing the design and control of soft robots. It provides a lightweight soft-body simulator wrapped with a gym-like interface for developing learning algorithms. EvoGym also includes a suite of 32 locomotion and manipulation tasks, detailed on our [website](https://evolutiongym.github.io/all-tasks). Task suite evaluations are described in our [NeurIPS 2021 paper](https://arxiv.org/pdf/2201.09863).
 
+
 > [!NOTE]
-> EvoGym has been recently updated! TLDR: requirements have been modernized (gym/gymnasium, numpy, etc.), and the library is now pip-installable.
+> **[06/25]** 90k+ robot structures and 2.5k+ robot policies from the original EvoGym paper are now [available for download with instructions](https://github.com/EvolutionGym/evogym-datasets)!
+
+> [!NOTE]
+> **[07/24]** EvoGym has been recently updated! TLDR: requirements have been modernized (gym/gymnasium, numpy, etc.), and the library is now pip-installable.
 
 [//]: # (<img src="https://github.com/EvolutionGym/evogym/raw/main/images/teaser-low-res.gif" alt="teaser" width="800"/>)
 ![teaser](https://github.com/EvolutionGym/evogym/raw/main/images/teaser-low-res.gif)
@@ -157,6 +161,12 @@ sim = EvoSim(world)
 viewer = EvoViewer(sim)
 viewer.render('img') # <-- Rendering libraries are initialized; do not call this
 ```
+
+# Datasets
+We've released two datasets of robot structures and policies from the original EvoGym paper. Instructions for downloading and using these datasets are available in the [evogym-datasets](https://github.com/EvolutionGym/evogym-datasets) repo. All datasets are hosted on [huggingface](https://huggingface.co/EvoGym).
+
+- [EvoGym/robots](https://huggingface.co/datasets/EvoGym/robots): 90k+ annotated robot structures
+- [EvoGym/robot-with-policies](https://huggingface.co/datasets/EvoGym/robots-with-policies): 2.5k+ annotated robot structures and policies
 
 # Dev
 
