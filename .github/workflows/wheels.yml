@@ -23,9 +23,9 @@ jobs:
             # https://github.com/glfw/glfw/issues/2139
             # manylinux_image: manylinux2014
 
-          # MacOS x86_64
-          - os: macos-12
-            platform_id: macosx_x86_64
+          # MacOS x86_64    # Deprecated, github actions no longer support macos-12
+          # - os: macos-12
+          #   platform_id: macosx_x86_64
             
           # MacOS arm64
           - os: macos-14
