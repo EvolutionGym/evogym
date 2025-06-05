@@ -6,18 +6,15 @@
 Evolution Gym is a large-scale benchmark for co-optimizing the design and control of soft robots. It provides a lightweight soft-body simulator wrapped with a gym-like interface for developing learning algorithms. EvoGym also includes a suite of 32 locomotion and manipulation tasks, detailed on our [website](https://evolutiongym.github.io/all-tasks). Task suite evaluations are described in our [NeurIPS 2021 paper](https://arxiv.org/pdf/2201.09863).
 
 
-<br>
-<p align="center">
-  <a href="https://forms.gle/Rn1TwzYGuVSAPQKfA" target="_blank" style="text-decoration: none;">
-    <img src="https://img.shields.io/badge/Get%20feature%20notifications-orange?style=for-the-badge&logo=tacobell&logoColor=black&color=fda158" alt="Get notified on releases">
+<div align="center" style="margin-top: 1em;">
+  <a href="https://forms.gle/Rn1TwzYGuVSAPQKfA" target="_blank">
+    <img src="https://img.shields.io/badge/Get%20feature%20notifications-orange?style=for-the-badge&logo=tacobell&logoColor=black&color=fda158" alt="" />
   </a>
   &nbsp;&nbsp;
-  <a href="https://forms.gle/vH5Ta7HtVVQb6GpR9" target="_blank" style="text-decoration: none;">
-    <img src="https://img.shields.io/badge/Submit%20a%20feature%20request-blue?style=for-the-badge&logo=googleforms&logoColor=black&color=a3d7ff" alt="Submit a feature request">
+  <a href="https://forms.gle/vH5Ta7HtVVQb6GpR9" target="_blank">
+    <img src="https://img.shields.io/badge/Submit%20a%20feature%20request-blue?style=for-the-badge&logo=googleforms&logoColor=black&color=a3d7ff" alt="" />
   </a>
-</p>
-
-
+</div>
 
 <!-- <p align="center">
   <a href="https://forms.gle/Rn1TwzYGuVSAPQKfA" target="_blank">
