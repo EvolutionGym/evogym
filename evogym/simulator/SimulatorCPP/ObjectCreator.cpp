@@ -403,7 +403,7 @@ bool ObjectCreator::read_object_from_array(string object_name, Matrix <double, 1
 
 			//BOT
 			if (bot != NULL && bot->edge_top_index != NULL)
-				current->edge_bot_index = top->edge_top_index;
+				current->edge_bot_index = bot->edge_top_index;
 			if (current->edge_bot_index == NULL) {
 				current->edge_bot_index = make_edge(current->point_bot_left_index, current->point_bot_right_index, abs(cell_size.x()), rigid_main_edge_spring_const);
 			}
