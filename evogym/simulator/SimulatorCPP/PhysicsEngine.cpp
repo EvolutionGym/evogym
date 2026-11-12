@@ -1023,6 +1023,25 @@ void PhysicsEngine::resolve_point_boxel_collisions(int p_index, Boxel* main, Box
 
 	//set normal forces
 
+	//a point inside a fixed boxel can have neither of its own edges crossing a surface edge of that boxel (e.g. when its
+	//side edge crosses the top of the neighboring boxel instead); left without a force it sinks, so use the nearest surface
+	//edge, if the point is within half a boxel of it (one farther from all of them is nearer a side shared with another boxel)
+	if (ref_edges_index.size() == 0 && !(*fixed)(0, p_index) && (*fixed)(0, ref->point_top_left_index)) {
+		//point_in_boxel also accepts points on the line through its diagonal, so check the point is within the boxel
+		BoundingBox ref_bbox = ref->get_bounding_box(*pos);
+		Vector2d p = pos->col(p_index);
+		double half_size = (ref_bbox.max_pos.y() - ref_bbox.min_pos.y()) / 2;
+		if (p.x() >= ref_bbox.min_pos.x() && p.x() <= ref_bbox.max_pos.x() && p.y() >= ref_bbox.min_pos.y() && p.y() <= ref_bbox.max_pos.y()) {
+			for (int i = 0; i < ref->edges.size(); i++) {
+				double dist = dist_point_edge(p_index, ref->edges[i]);
+				if (edges->at(ref->edges[i]).isOnSurface && dist < half_size) {
+					ref_edges_index.push_back(ref->edges[i]);
+					ref_edges_score.push_back(dist);
+				}
+			}
+		}
+	}
+
 	if (ref_edges_index.size() == 0)
 		return;
 
